@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct TimetrackerApp: App {
+struct StopwatchApp: App {
 	@StateObject private var settings = Settings(fontChoice: .sansSerif, largerFont: .runningTotal, showSecondaryText: true, showMillisecondsAfterHour: false, expandLapsOnLap: true)
 	@StateObject private var stopwatches = StopwatchViewModel()
 	
@@ -16,7 +16,7 @@ struct TimetrackerApp: App {
 		WindowGroup {
 			TabView {
 				Tab("Stopwatch", systemImage: "stopwatch") {
-					ContentView()
+					StopwatchesMainView()
 						.environmentObject(stopwatches)
 						.environmentObject(settings)
 						.onReceive(NotificationCenter.default.publisher(for: UIApplication.willTerminateNotification)) { _ in
@@ -25,6 +25,10 @@ struct TimetrackerApp: App {
 						.onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)) { _ in
 							stopwatches.saveAllStopwatches()
 						}
+				}
+				
+				Tab("Timer", systemImage: "timer") {
+					TimersView()
 				}
 				
 				Tab("Settings", systemImage: "gear") {

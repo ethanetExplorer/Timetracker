@@ -28,6 +28,7 @@ class Settings: Identifiable, ObservableObject {
 	@Published var expandLapsOnLap: Bool {
 		didSet { saveSettings() }
 	}
+//	@Published var alwaysShowResetButton: 
 	
 	init(fontChoice: FontStyle, largerFont: TextBodies, showSecondaryText: Bool, showMillisecondsAfterHour: Bool, expandLapsOnLap: Bool) {
 		self.fontChoice = fontChoice

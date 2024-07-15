@@ -21,7 +21,7 @@ struct StopwatchView: View {
 						.multilineTextAlignment(.leading)
 						.foregroundStyle(.gray)
 					Text(settings.largerFont == .runningTotal ? formatTime(input: stopwatch.elapsedTime) : formatTime(input: stopwatch.elapsedTime - (stopwatch.laps.last?.timeRunningTotal ?? 0)))
-						.font(.largeTitle)
+						.font(.title)
 						.monospaced(settings.fontChoice == .monospace)
 						.multilineTextAlignment(.leading)
 					if settings.showSecondaryText, !stopwatch.laps.isEmpty {
@@ -36,29 +36,21 @@ struct StopwatchView: View {
 				HStack {
 					if stopwatch.isRunning {
 						Button(action: stopwatch.stop) {
-							Image(systemName: "stop.circle.fill")
-								.foregroundStyle(.red)
-								.font(.largeTitle)
+							actionButtonLabel(image: "stop.fill", color: .red)
 						}
 					} else {
 						Button(action: stopwatch.start) {
-							Image(systemName: "play.circle.fill")
-								.foregroundStyle(.green)
-								.font(.largeTitle)
+							actionButtonLabel(image: "play.fill", color: .green)
 						}
 					}
 					
 					Button(action: addLap) {
-						Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90.circle.fill")
-							.foregroundStyle(.cyan)
-							.font(.largeTitle)
+						actionButtonLabel(image: "point.forward.to.point.capsulepath.fill", color: .teal)
 					}
 					
 					if isExpanded {
 						Button(action: stopwatch.reset) {
-							Image(systemName: "restart.circle.fill")
-								.foregroundStyle(.yellow)
-								.font(.largeTitle)
+							actionButtonLabel(image: "arrow.circlepath", color: .yellow)
 						}
 					}
 				}
@@ -101,7 +93,7 @@ struct StopwatchView: View {
 		}
 	}
 	
-	private func formatTime(input: Double) -> String {
+	func formatTime(input: Double) -> String {
 		let seconds = Int(input) % 60
 		let minutes = (Int(input) / 60) % 60
 		let hours = Int(input) / 3600
@@ -120,7 +112,7 @@ struct StopwatchView: View {
 		}
 	}
 	
-	private func getLapTextColor(lap: Lap) -> Color {
+	func getLapTextColor(lap: Lap) -> Color {
 		let bestLap = stopwatch.laps.min(by: { $0.timeElapsedSinceLastLap < $1.timeElapsedSinceLastLap })
 		let worstLap = stopwatch.laps.max(by: { $0.timeElapsedSinceLastLap < $1.timeElapsedSinceLastLap })
 		
@@ -131,5 +123,14 @@ struct StopwatchView: View {
 		} else {
 			return .primary
 		}
+	}
+	
+	func actionButtonLabel(image: String, color: Color) -> some View {
+			Image(systemName: image)
+				.font(.title)
+				.foregroundStyle(color)
+				.padding(10)
+				.background(color.opacity(0.2))
+				.clipShape(Circle())
 	}
 }
