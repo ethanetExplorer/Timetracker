@@ -29,6 +29,7 @@ struct StopwatchApp: App {
 				
 				Tab("Timer", systemImage: "timer") {
 					TimersView()
+						.environmentObject(settings)
 				}
 				
 				Tab("Settings", systemImage: "gear") {
