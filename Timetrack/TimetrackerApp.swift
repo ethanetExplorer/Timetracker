@@ -11,6 +11,7 @@ import SwiftUI
 struct TimetrackApp: App {
 	@StateObject private var settings = Settings(fontChoice: .sansSerif, largerFont: .runningTotal, showSecondaryText: true, showMillisecondsAfterHour: false, expandLapsOnLap: true)
 	@StateObject private var stopwatches = StopwatchViewModel()
+	@StateObject private var timers = TimerModel()
 	
 	var body: some Scene {
 		WindowGroup {
@@ -30,6 +31,7 @@ struct TimetrackApp: App {
 				Tab("Timer", systemImage: "timer") {
 					TimersView()
 						.environmentObject(settings)
+						.environmentObject(timers)
 				}
 				
 				Tab("Settings", systemImage: "gear") {
