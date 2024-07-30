@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct StopwatchApp: App {
+struct TimetrackApp: App {
 	@StateObject private var settings = Settings(fontChoice: .sansSerif, largerFont: .runningTotal, showSecondaryText: true, showMillisecondsAfterHour: false, expandLapsOnLap: true)
 	@StateObject private var stopwatches = StopwatchViewModel()
 	

@@ -3,15 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6621A0F82C365AE00055A2B6 /* TimersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6621A0F72C365AE00055A2B6 /* TimersView.swift */; };
-		6621A0FA2C365F1A0055A2B6 /* TimerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6621A0F92C365F1A0055A2B6 /* TimerItem.swift */; };
 		6621A11D2C36DDF40055A2B6 /* StopwatchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6621A11C2C36DDF40055A2B6 /* StopwatchViewModel.swift */; };
 		6621A1202C38EB310055A2B6 /* StopwatchMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6621A11F2C38EB310055A2B6 /* StopwatchMainView.swift */; };
-		6621A1222C38EC280055A2B6 /* TimerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6621A1212C38EC270055A2B6 /* TimerModel.swift */; };
 		66248AA42C1ADB5D006E6E67 /* StopwatchItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66248AA32C1ADB5D006E6E67 /* StopwatchItemView.swift */; };
 		66248AA62C1ADC99006E6E67 /* StopwatchItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66248AA52C1ADC99006E6E67 /* StopwatchItem.swift */; };
 		662BCFE32C1A7A2600A9F721 /* TimetrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662BCFE22C1A7A2600A9F721 /* TimetrackerApp.swift */; };
@@ -22,22 +19,34 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		6621A0F72C365AE00055A2B6 /* TimersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimersView.swift; sourceTree = "<group>"; };
-		6621A0F92C365F1A0055A2B6 /* TimerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerItem.swift; sourceTree = "<group>"; };
 		6621A11C2C36DDF40055A2B6 /* StopwatchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopwatchViewModel.swift; sourceTree = "<group>"; };
 		6621A11F2C38EB310055A2B6 /* StopwatchMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopwatchMainView.swift; sourceTree = "<group>"; };
-		6621A1212C38EC270055A2B6 /* TimerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerModel.swift; sourceTree = "<group>"; };
 		66248AA32C1ADB5D006E6E67 /* StopwatchItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopwatchItemView.swift; sourceTree = "<group>"; };
 		66248AA52C1ADC99006E6E67 /* StopwatchItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopwatchItem.swift; sourceTree = "<group>"; };
 		662BCFDF2C1A7A2600A9F721 /* Stopwatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stopwatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		662BCFE22C1A7A2600A9F721 /* TimetrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetrackerApp.swift; sourceTree = "<group>"; };
 		662BCFE42C1A7A2600A9F721 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		662BCFE62C1A7A2700A9F721 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		662BCFE82C1A7A2700A9F721 /* Stopwatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Stopwatch.entitlements; sourceTree = "<group>"; };
+		662BCFE82C1A7A2700A9F721 /* Timetrack.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Timetrack.entitlements; sourceTree = "<group>"; };
 		662BCFEA2C1A7A2700A9F721 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		665574112C1B026200127438 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		668F07D12C1B3C350059ED7B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		666599382C57E1CA00E27EF6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				TimerItem.swift,
+				TimersView.swift,
+			);
+			target = 662BCFDE2C1A7A2600A9F721 /* Stopwatch */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		666599372C57E1C900E27EF6 /* Timer */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (666599382C57E1CA00E27EF6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Timer; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		662BCFDC2C1A7A2600A9F721 /* Frameworks */ = {
@@ -57,6 +66,7 @@
 				6621A11C2C36DDF40055A2B6 /* StopwatchViewModel.swift */,
 				66248AA52C1ADC99006E6E67 /* StopwatchItem.swift */,
 				66248AA32C1ADB5D006E6E67 /* StopwatchItemView.swift */,
+				6621A11F2C38EB310055A2B6 /* StopwatchMainView.swift */,
 			);
 			path = Stopwatch;
 			sourceTree = "<group>";
@@ -64,7 +74,7 @@
 		662BCFD62C1A7A2600A9F721 = {
 			isa = PBXGroup;
 			children = (
-				662BCFE12C1A7A2600A9F721 /* Stopwatch */,
+				662BCFE12C1A7A2600A9F721 /* Timetrack */,
 				662BCFE02C1A7A2600A9F721 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -77,22 +87,19 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		662BCFE12C1A7A2600A9F721 /* Stopwatch */ = {
+		662BCFE12C1A7A2600A9F721 /* Timetrack */ = {
 			isa = PBXGroup;
 			children = (
 				668F07D12C1B3C350059ED7B /* Info.plist */,
-				6621A0F72C365AE00055A2B6 /* TimersView.swift */,
-				6621A1212C38EC270055A2B6 /* TimerModel.swift */,
+				666599372C57E1C900E27EF6 /* Timer */,
 				6621A11E2C3771730055A2B6 /* Stopwatch */,
 				662BCFE22C1A7A2600A9F721 /* TimetrackerApp.swift */,
 				662BCFE42C1A7A2600A9F721 /* ContentView.swift */,
-				6621A11F2C38EB310055A2B6 /* StopwatchMainView.swift */,
-				6621A0F92C365F1A0055A2B6 /* TimerItem.swift */,
 				662BCFE62C1A7A2700A9F721 /* Assets.xcassets */,
-				662BCFE82C1A7A2700A9F721 /* Stopwatch.entitlements */,
+				662BCFE82C1A7A2700A9F721 /* Timetrack.entitlements */,
 				662BCFE92C1A7A2700A9F721 /* Preview Content */,
 			);
-			path = Stopwatch;
+			path = Timetrack;
 			sourceTree = "<group>";
 		};
 		662BCFE92C1A7A2700A9F721 /* Preview Content */ = {
@@ -174,13 +181,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				665574122C1B026200127438 /* SettingsView.swift in Sources */,
-				6621A0F82C365AE00055A2B6 /* TimersView.swift in Sources */,
 				6621A11D2C36DDF40055A2B6 /* StopwatchViewModel.swift in Sources */,
-				6621A0FA2C365F1A0055A2B6 /* TimerItem.swift in Sources */,
 				66248AA42C1ADB5D006E6E67 /* StopwatchItemView.swift in Sources */,
 				662BCFE52C1A7A2600A9F721 /* ContentView.swift in Sources */,
 				66248AA62C1ADC99006E6E67 /* StopwatchItem.swift in Sources */,
-				6621A1222C38EC280055A2B6 /* TimerModel.swift in Sources */,
 				662BCFE32C1A7A2600A9F721 /* TimetrackerApp.swift in Sources */,
 				6621A1202C38EB310055A2B6 /* StopwatchMainView.swift in Sources */,
 			);
@@ -308,17 +312,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Stopwatch/Stopwatch.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Timetrack/Timetrack.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Stopwatch/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Timetrack/Preview Content\"";
 				DEVELOPMENT_TEAM = ZL64HBDS45;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Stopwatch/Info.plist;
+				INFOPLIST_FILE = Timetrack/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Timetrack;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -353,17 +358,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Stopwatch/Stopwatch.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Timetrack/Timetrack.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Stopwatch/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Timetrack/Preview Content\"";
 				DEVELOPMENT_TEAM = ZL64HBDS45;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Stopwatch/Info.plist;
+				INFOPLIST_FILE = Timetrack/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Timetrack;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
