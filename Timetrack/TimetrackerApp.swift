@@ -11,7 +11,10 @@ import SwiftUI
 struct StopwatchApp: App {
 	@StateObject private var settings = Settings(fontChoice: .sansSerif, largerFont: .runningTotal, showSecondaryText: true, showMillisecondsAfterHour: false, expandLapsOnLap: true)
 	@StateObject private var stopwatches = StopwatchViewModel()
-	@StateObject private var timers = TimerModel()
+//	@StateObject private var timers = TimerModel()
+	@StateObject private var timerSet = TimerSet()
+	
+//	@AppStorage("screen") var screenNumber: Int = 1 
 	
 	var body: some Scene {
 		WindowGroup {
@@ -29,9 +32,16 @@ struct StopwatchApp: App {
 				}
 				
 				Tab("Timer", systemImage: "timer") {
-					TimersView()
+					TimersView(timerSet: timerSet)
 						.environmentObject(settings)
-						.environmentObject(timers)
+						.onAppear {
+							timerSet.loadTimers()
+						}
+						.onDisappear {
+							timerSet.saveTimers()
+							UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "lastCloseDate")
+						}
+					
 				}
 				
 				Tab("Settings", systemImage: "gear") {
@@ -40,5 +50,6 @@ struct StopwatchApp: App {
 				}
 			}
 		}
+		
 	}
 }

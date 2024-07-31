@@ -8,231 +8,161 @@
 import SwiftUI
 import Combine
 
-<<<<<<< HEAD
-//class TimerViewModel: ObservableObject {
-//	@Published var timerModel = TimerModel()
-//	@Published var newTimerLabel: String = ""
-//	@Published var newTimerDuration: Double = 0.0
-//}
-
 struct TimersView: View {
 	
-	@EnvironmentObject var timerModel: TimerModel
-	@State var newTimerLabel: String = ""
-	@State var newTimerDuration: Double = 0.0
-	
-	@State private var showDeleteAlert = false
-	@State var timeAlert = false
-=======
-class TimerViewModel: ObservableObject {
-	@Published var timerModel = TimerModel()
-	@Published var newTimerLabel: String = ""
-	@Published var newTimerDuration: Double = 0.0
-}
-
-struct TimersView: View {
-	
-	@StateObject private var viewModel = TimerViewModel()
-	@State private var showDeleteAlert = false
-	
->>>>>>> main
+	@ObservedObject var timerSet = TimerSet()
 	@EnvironmentObject var settings: Settings
-	@State var selectedTimer: CountdownTimer?
+	
+	@State var selectedTimer: CountdownTimer = CountdownTimer(label: "Timer Example", duration: 0, remainingTime: 0, isRunning: false)
+	@State var showDeleteAlert = false
+	@State var showCreateTimerAlert = false
+	@State var newTimerTimeText = ""
 	
 	var body: some View {
-		VStack {
-			HStack {
-<<<<<<< HEAD
-				TextField("Timer \(timerModel.timerSet.timers.count + 1)", text: $newTimerLabel)
-					.textFieldStyle(RoundedBorderTextFieldStyle())
-				TextField("Duration (seconds)", value: $newTimerDuration, formatter: NumberFormatter())
-					.textFieldStyle(RoundedBorderTextFieldStyle())
-					.keyboardType(.decimalPad)
-				Button {
-					if newTimerLabel == "" {
-						timerModel.addTimer(label: "Timer \(timerModel.timerSet.timers.count + 1)", duration: newTimerDuration)
-					} else {
-						timerModel.addTimer(label: newTimerLabel, duration: newTimerDuration)
+		NavigationStack {
+			ScrollView {
+				if !timerSet.timers.isEmpty  {
+					ForEach(timerSet.timers) { timer in
+						TimerRowView(timer: timer, settings: _settings, selectedTimer: $selectedTimer, showDeleteAlert: $showDeleteAlert)
+							.contextMenu {
+								Button {
+									selectedTimer = timer
+									showDeleteAlert = true
+								} label: {
+									HStack {
+										Image(systemName: "trash")
+										Text("Delete timer")
+									}
+								}
+							}
 					}
-					newTimerLabel = ""
-					newTimerDuration = 0.0
-=======
-				TextField("Timer \(viewModel.timerModel.timerSet.timers.count + 1)", text: $viewModel.newTimerLabel)
-					.textFieldStyle(RoundedBorderTextFieldStyle())
-				TextField("Duration (seconds)", value: $viewModel.newTimerDuration, formatter: NumberFormatter())
-					.textFieldStyle(RoundedBorderTextFieldStyle())
-					.keyboardType(.decimalPad)
-				Button {
-					
-					if viewModel.newTimerLabel == "" {
-						viewModel.timerModel.addTimer(label: "Timer \(viewModel.timerModel.timerSet.timers.count + 1)", duration: viewModel.newTimerDuration)
-					} else {
-						viewModel.timerModel.addTimer(label: viewModel.newTimerLabel, duration: viewModel.newTimerDuration)
-					}
-					viewModel.newTimerLabel = ""
-					viewModel.newTimerDuration = 0.0
->>>>>>> main
-				} label: {
-					Image(systemName: "plus.circle.fill")
-						.font(.title)
 				}
-			}
-			.padding()
-			
-<<<<<<< HEAD
-			ForEach(timerModel.timerSet.timers) { timer in
-				TimerRow(timer: timer)
-					.id(timer.id)
-=======
-			ForEach(viewModel.timerModel.timerSet.timers) { timer in
-				TimerRow(timer: timer, viewModel: viewModel)
->>>>>>> main
-					.contextMenu {
-						Button {
-							selectedTimer = timer
-							showDeleteAlert = true
-						} label: {
-							HStack {
-								Image(systemName: "trash")
-								Text("Delete \(timer.label)")
-							}
-						}
-					}
-					.alert("Delete \(selectedTimer?.label ?? "timer")", isPresented: $showDeleteAlert) {
-						Button("Cancel", role: .cancel) {
-							showDeleteAlert = false
-						}
-						Button("Delete", role: .destructive) {
-<<<<<<< HEAD
-							if let selectedTimer {
-								timerModel.removeTimer(byId: timer.id)
-=======
-							if let timerToDelete = selectedTimer {
-								viewModel.timerModel.removeTimer(byId: timer.id)
->>>>>>> main
-							}
-							showDeleteAlert = false
-						}
-					}
-			}
-<<<<<<< HEAD
-			if !timerModel.timerSet.timers.isEmpty {
 				Spacer()
-			} else {
 				HStack {
 					Button {
-						timerModel.addTimer(label: "Timer", duration: 60)
-//						timerModel.startTimer(byId: timerModel.timerSet.timers[timerModel.timerSet.timers.count-1].id)
+						timerSet.timers.append(CountdownTimer(label: "Timer \(timerSet.timers.count + 1)", duration: 60, remainingTime: 60, isRunning: false))
+						timerSet.timers.last?.start()
 					} label: {
 						Text("1m")
-							.font(.title)
-							.padding(4)
-							.background(.gray)
-							.clipShape(RoundedRectangle)
 					}
-					.padding()
+					.buttonStyle(.bordered)
+					
 					Button {
-						timerModel.addTimer(label: "Timer", duration: 300)
-//						timerModel.startTimer(byId: timerModel.timerSet.timers[timerModel.timerSet.timers.count-1].id)
+						timerSet.timers.append(CountdownTimer(label: "Timer \(timerSet.timers.count + 1)", duration: 300, remainingTime: 300, isRunning: false))
+						timerSet.timers.last?.start()
 					} label: {
 						Text("5m")
-							.font(.title)
-							.padding(4)
-							.background(.gray)
-							.clipShape(RoundedRectangle)
 					}
-					.padding()
+					.buttonStyle(.bordered)
+					
 					Button {
-						timerModel.addTimer(label: "Timer", duration: 600)
-//						timerModel.startTimer(byId: timerModel.timerSet.timers[timerModel.timerSet.timers.count-1].id)
+						timerSet.timers.append(CountdownTimer(label: "Timer \(timerSet.timers.count + 1)", duration: 600, remainingTime: 600, isRunning: false))
+						timerSet.timers.last?.start()
 					} label: {
 						Text("10m")
-							.font(.title)
-							.padding(4)
-							.background(.gray)
-							.clipShape(RoundedRectangle)
 					}
-					.padding()
+					.buttonStyle(.bordered)
+					Button {
+						showCreateTimerAlert = true
+					} label: {
+						Text("Custom")
+					}
+					.buttonStyle(.borderedProminent)
 				}
-=======
-			if !viewModel.timerModel.timerSet.timers.isEmpty {
-				Spacer()
->>>>>>> main
+				.padding(.vertical)
+				
+				if timerSet.timers.isEmpty {
+					Spacer()
+				}
+			}
+			.navigationTitle("Timers")
+			.navigationBarTitleDisplayMode(.inline)
+			
+			.alert("Delete \(selectedTimer.label ?? "timer")", isPresented: $showDeleteAlert) {
+				Button("Cancel", role: .cancel) {
+					showDeleteAlert = false
+				}
+				Button("Delete", role: .destructive) {
+					if selectedTimer != nil {
+						selectedTimer.isRunning = false
+						selectedTimer.remainingTime = 0
+						selectedTimer.duration = 0
+						timerSet.deleteTimer(by: selectedTimer.id)
+					}
+					showDeleteAlert = false
+				}
+			}
+			.alert(
+				Text("Create timer"),
+				isPresented: $showCreateTimerAlert
+			) {
+				Button("Cancel", role: .cancel) {
+					showCreateTimerAlert = false
+				}
+				Button("OK") {
+					if newTimerTimeText != nil {
+						timerSet.timers.append(CountdownTimer(label: "Timer \(timerSet.timers.count + 1)", duration: Double(newTimerTimeText)!, remainingTime: Double(newTimerTimeText)!, isRunning: true))
+					}
+				}
+				TextField("Timer duration (s)", text: $newTimerTimeText)
+					.keyboardType(.decimalPad)
+				//				DatePicker("Timer duration", selection: $newTimerTimeText)
+			} message: {
+				Text("Time")
 			}
 		}
 	}
 }
 
-struct TimerRow: View {
+struct TimerRowView: View {
 	@ObservedObject var timer: CountdownTimer
-<<<<<<< HEAD
 	@EnvironmentObject var settings: Settings
+	
+	@Binding var selectedTimer: CountdownTimer
+	@Binding var showDeleteAlert: Bool
+	
 	var body: some View {
-		
-		VStack {
-			HStack {
-				VStack(alignment: .leading) {
-					Text(timer.label)
-						.multilineTextAlignment(.leading)
-						.foregroundStyle(.gray)
-					Text(formatTime(input: timer.remainingTime))
-						.font(.title)
-						.monospaced(settings.fontChoice == .monospace)
-						.multilineTextAlignment(.leading)
-				}
-				Spacer()
-				
-				if timer.isRunning {
-					Button(action: { timer.stop() }) {
-						actionButtonLabel(image: "stop.fill", color: .red)
-					}
-				} else {
-					Button(action: { timer.start() }) {
-						actionButtonLabel(image: "play.fill", color: .green)
-					}
-				}
-				Button(action: { timer.start() }) {
-					actionButtonLabel(image: "arrow.circlepath", color: .yellow)
-				}
-			}
-			.padding(.horizontal)
-			Divider()
-				.padding(.horizontal)
-		}
-=======
-	var viewModel: TimerViewModel
-	@EnvironmentObject var settings: Settings
-	var body: some View {
-		
-		
 		HStack {
 			VStack(alignment: .leading) {
 				Text(timer.label)
-					.multilineTextAlignment(.leading)
 					.foregroundStyle(.gray)
+					.font(.subheadline)
 				Text(formatTime(input: timer.remainingTime))
-					.font(.title)
+					.font(.largeTitle)
 					.monospaced(settings.fontChoice == .monospace)
-					.multilineTextAlignment(.leading)
 			}
 			Spacer()
-			
-			if timer.isRunning {
-				Button(action: { viewModel.timerModel.stopTimer(byId: timer.id) }) {
-					actionButtonLabel(image: "stop.fill", color: .red)
+			HStack {
+				if timer.isRunning {
+					Button {
+						timer.stop()
+					} label: {
+						actionButtonLabel(image: "stop.fill", color: .red)
+					}
+				} else if timer.remainingTime == 0 {
+					Button {
+						selectedTimer = timer
+						showDeleteAlert = true
+					} label: {
+						actionButtonLabel(image: "trash.fill", color: .red)
+					}
+				} else {
+					Button {
+						timer.start()
+					} label: {
+						actionButtonLabel(image: "play.fill", color: .green)
+					}
 				}
-			} else {
-				Button(action: { viewModel.timerModel.startTimer(byId: timer.id) }) {
-					actionButtonLabel(image: "play.fill", color: .green)
+				Button {
+					timer.reset()
+				} label: {
+					actionButtonLabel(image: "arrow.circlepath", color: .yellow)
 				}
-			}
-			Button(action: { viewModel.timerModel.resetTimer(byId: timer.id) }) {
-				actionButtonLabel(image: "arrow.circlepath", color: .yellow)
 			}
 		}
-		.padding()
->>>>>>> main
+		.padding(.horizontal)
 	}
+	
 	func formatTime(input: Double) -> String {
 		let seconds = Int(input) % 60
 		let minutes = (Int(input) / 60) % 60
@@ -259,11 +189,5 @@ struct TimerRow: View {
 			.padding(10)
 			.background(color.opacity(0.2))
 			.clipShape(Circle())
-	}
-}
-
-extension TimerModel {
-	func removeTimer(by timer: CountdownTimer) {
-		removeTimer(byId: timer.id)
 	}
 }
