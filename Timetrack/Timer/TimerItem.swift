@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import UIKit
 
 class CountdownTimer: ObservableObject, Identifiable, Codable {
 	let id: UUID
@@ -14,9 +15,10 @@ class CountdownTimer: ObservableObject, Identifiable, Codable {
 	@Published var duration: Double
 	@Published var remainingTime: Double
 	@Published var isRunning: Bool
+	private var startTime: Date?
 	
 	private enum CodingKeys: String, CodingKey {
-		case id, label, duration, remainingTime, isRunning
+		case id, label, duration, remainingTime, isRunning, startTime
 	}
 	
 	init(label: String, duration: Double, remainingTime: Double, isRunning: Bool) {
@@ -25,6 +27,7 @@ class CountdownTimer: ObservableObject, Identifiable, Codable {
 		self.duration = duration
 		self.remainingTime = remainingTime
 		self.isRunning = isRunning
+		self.startTime = isRunning ? Date() : nil
 	}
 	
 	required init(from decoder: Decoder) throws {
@@ -34,6 +37,17 @@ class CountdownTimer: ObservableObject, Identifiable, Codable {
 		duration = try container.decode(Double.self, forKey: .duration)
 		remainingTime = try container.decode(Double.self, forKey: .remainingTime)
 		isRunning = try container.decode(Bool.self, forKey: .isRunning)
+		startTime = try container.decode(Date?.self, forKey: .startTime)
+		
+		// Adjust remaining time if the timer was running
+		if isRunning, let startTime = startTime {
+			let elapsedTime = Date().timeIntervalSince(startTime)
+			remainingTime -= elapsedTime
+			if remainingTime <= 0 {
+				remainingTime = 0
+				isRunning = false
+			}
+		}
 	}
 	
 	func encode(to encoder: Encoder) throws {
@@ -43,19 +57,32 @@ class CountdownTimer: ObservableObject, Identifiable, Codable {
 		try container.encode(duration, forKey: .duration)
 		try container.encode(remainingTime, forKey: .remainingTime)
 		try container.encode(isRunning, forKey: .isRunning)
+		try container.encode(startTime, forKey: .startTime)
 	}
 	
 	func start() {
+		self.startTime = Date()
 		self.isRunning = true
 	}
 	
 	func stop() {
+		if let startTime = startTime {
+			let elapsedTime = Date().timeIntervalSince(startTime)
+			print("Stopping Timer: Elapsed Time = \(elapsedTime)")
+			self.remainingTime -= elapsedTime
+			if self.remainingTime < 0 {
+				self.remainingTime = 0
+			}
+			print("Remaining Time after stopping: \(self.remainingTime)")
+		}
 		self.isRunning = false
+		self.startTime = nil
 	}
 	
 	func reset() {
 		self.stop()
 		self.remainingTime = self.duration
+		self.startTime = nil
 	}
 }
 
@@ -98,6 +125,8 @@ class TimerSet: ObservableObject, Identifiable {
 		let encoder = JSONEncoder()
 		if let encoded = try? encoder.encode(timers) {
 			UserDefaults.standard.set(encoded, forKey: userDefaultsKey)
+			let lastCloseDate = UserDefaults.standard.double(forKey: "lastCloseDate")
+			UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "lastCloseDate")
 		}
 	}
 	
@@ -107,11 +136,17 @@ class TimerSet: ObservableObject, Identifiable {
 			if let decodedTimers = try? decoder.decode([CountdownTimer].self, from: savedTimers) {
 				self.timers = decodedTimers
 				
-				// Adjust timers based on elapsed time since app was closed
+				// Retrieve the last close date
 				let lastCloseDate = UserDefaults.standard.double(forKey: "lastCloseDate")
 				let currentTime = Date().timeIntervalSince1970
 				let elapsedTime = currentTime - lastCloseDate
 				
+				// Debugging output
+				print("lastCloseDate: \(lastCloseDate)")
+				print("currentTime: \(currentTime)")
+				print("elapsedTime: \(elapsedTime)")
+				
+				// Adjust each timer based on the elapsed time
 				for timer in self.timers where timer.isRunning {
 					timer.remainingTime -= elapsedTime
 					if timer.remainingTime <= 0 {
@@ -122,9 +157,9 @@ class TimerSet: ObservableObject, Identifiable {
 			}
 		}
 	}
+
 	
 	func startBackgroundTimer() {
-		// Timer that updates every 0.1 seconds
 		cancellable = Timer.publish(every: 0.01, on: .main, in: .common)
 			.autoconnect()
 			.sink { [weak self] _ in

@@ -13,6 +13,8 @@ struct StopwatchApp: App {
 	@StateObject private var stopwatches = StopwatchViewModel()
 //	@StateObject private var timers = TimerModel()
 	@StateObject private var timerSet = TimerSet()
+	@Environment(\.scenePhase) var scenePhase
+
 	
 //	@AppStorage("screen") var screenNumber: Int = 1 
 	
@@ -39,7 +41,6 @@ struct StopwatchApp: App {
 						}
 						.onDisappear {
 							timerSet.saveTimers()
-							UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "lastCloseDate")
 						}
 					
 				}
@@ -51,5 +52,13 @@ struct StopwatchApp: App {
 			}
 		}
 		
+		.onChange(of: scenePhase) { newPhase in
+			if newPhase == .background {
+				let currentTimestamp = Date().timeIntervalSince1970
+				print("Saving lastCloseDate: \(currentTimestamp)")
+				UserDefaults.standard.set(currentTimestamp, forKey: "lastCloseDate")
+				timerSet.saveTimers()
+			}
+		}
 	}
 }

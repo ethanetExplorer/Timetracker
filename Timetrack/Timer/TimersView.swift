@@ -17,9 +17,13 @@ struct TimersView: View {
 	@State var showDeleteAlert = false
 	@State var showCreateTimerAlert = false
 	@State var newTimerTimeText = ""
+	@State var sequentialTimerEnabled = false
 	
 	var body: some View {
 		NavigationStack {
+			Toggle("Sequential timers", isOn: $sequentialTimerEnabled)
+				.toggleStyle(.switch)
+				.padding(.horizontal)
 			ScrollView {
 				if !timerSet.timers.isEmpty  {
 					ForEach(timerSet.timers) { timer in
