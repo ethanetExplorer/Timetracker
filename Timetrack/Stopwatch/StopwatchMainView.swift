@@ -71,13 +71,13 @@ struct StopwatchesMainView: View {
 											Text("Rename")
 										}
 									}
-									Button {
+                                    Button(role: .destructive) {
 										selectedStopwatch = stopwatch
 										showDeleteAlert = true
 									} label: {
 										HStack {
 											Image(systemName: "trash")
-											Text("Delete \(stopwatch.label)")
+											Text("Delete \(stopwatch.label)")	
 										}
 									}
 								}
@@ -96,7 +96,6 @@ struct StopwatchesMainView: View {
 									}
 								}
 								.alert("Delete \(selectedStopwatch?.label ?? "")", isPresented: $showDeleteAlert) {
-									//									VStack {
 									Button("Cancel", role: .cancel) {
 										showDeleteAlert = false
 									}
@@ -107,16 +106,15 @@ struct StopwatchesMainView: View {
 										}
 										showDeleteAlert = false
 									}
-									//									}
 								}
 						}
 						HStack {
 							TextField("Title", text: $newStopwatchLabel)
 								.padding(.horizontal, 8)
-								.padding(.vertical, 4)
+								.padding(.vertical, 5)
 								.overlay {
 									RoundedRectangle(cornerRadius: 8, style: .continuous)
-										.stroke(Color.gray, lineWidth: 1)
+                                        .stroke(Color.gray, lineWidth: 0.75)
 										.opacity(0.25)
 								}
 							Button {
@@ -132,7 +130,7 @@ struct StopwatchesMainView: View {
 								
 							}
 						}
-						.padding(.top, 16)
+						.padding(.top, 4)
 						.padding(.horizontal, 8)
 					}
 				}

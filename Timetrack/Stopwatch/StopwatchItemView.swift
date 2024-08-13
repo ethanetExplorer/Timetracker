@@ -55,7 +55,7 @@ struct StopwatchView: View {
 					}
 				}
 			}
-			.padding(.bottom, 8)
+//			.padding(.bottom, 8)
 			
 			if isExpanded {
 				ForEach(stopwatch.laps.reversed()) { lap in
