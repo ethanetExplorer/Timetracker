@@ -111,31 +111,30 @@ struct StopwatchesMainView: View {
                                     }
                                 }
                         }
-                        HStack {
-                            TextField("Title", text: $newStopwatchLabel)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 5)
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                        .stroke(Color.gray, lineWidth: 0.75)
-                                        .opacity(0.25)
-                                }
-                            Button {
-                                if newStopwatchLabel.isEmpty {
-                                    viewModel.addStopwatch(title: "Stopwatch \(viewModel.stopwatches.count + 1)")
-                                } else {
-                                    viewModel.addStopwatch(title: newStopwatchLabel)
-                                }
-                                newStopwatchLabel = ""
-                            } label: {
-                                Image(systemName: "plus.circle.fill")
-                                    .font(.title)
-                                
-                            }
-                        }
-                        .padding(.top, 4)
-                        .padding(.horizontal, 8)
+                        
                     }
+                    HStack {
+                        TextField("Title", text: $newStopwatchLabel)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 5)
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .stroke(Color.gray, lineWidth: 0.75)
+                                    .opacity(0.25)
+                            }
+                        Button {
+                            if newStopwatchLabel.isEmpty {
+                                viewModel.addStopwatch(title: "Stopwatch \(viewModel.stopwatches.count + 1)")
+                            } else {
+                                viewModel.addStopwatch(title: newStopwatchLabel)
+                            }
+                            newStopwatchLabel = ""
+                        } label: {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.largeTitle)
+                        }
+                    }
+                    .padding(8)
                 }
                 Spacer()
             }

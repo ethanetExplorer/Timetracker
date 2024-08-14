@@ -34,20 +34,12 @@ struct StopwatchView: View {
 				}
 				Spacer()
 				HStack {
-					if stopwatch.isRunning {
-						Button(action: stopwatch.stop) {
-							actionButtonLabel(image: "stop.fill", color: .red)
-						}
-					} else {
-						Button(action: stopwatch.start) {
-							actionButtonLabel(image: "play.fill", color: .green)
-						}
-					}
-					
+                    Button(action: stopwatch.isRunning ? stopwatch.stop : stopwatch.start) {
+                        stopwatch.isRunning ? actionButtonLabel(image: "stop.fill", color: .red) : actionButtonLabel(image: "play.fill", color: .green)
+                    }
 					Button(action: addLap) {
 						actionButtonLabel(image: "point.forward.to.point.capsulepath.fill", color: .teal)
-					}
-					
+					}					
                     if isExpanded || settings.alwaysShowResetButton {
 						Button(action: stopwatch.reset) {
 							actionButtonLabel(image: "arrow.circlepath", color: .yellow)
@@ -72,7 +64,7 @@ struct StopwatchView: View {
 							.padding(.horizontal, 4)
 							.monospaced(settings.fontChoice == .monospace)
 					}
-				}
+				}	
 			}
 		}
 		.padding(.horizontal)
@@ -100,11 +92,7 @@ struct StopwatchView: View {
 		let milliseconds = Int((input.truncatingRemainder(dividingBy: 1)) * 100)
 		
 		if hours > 0 {
-			if settings.showMillisecondsAfterHour {
-				return String(format: "%02d:%02d:%02d:%02d", hours, minutes, seconds, milliseconds)
-			} else {
-				return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
-			}
+            return settings.showMillisecondsAfterHour ? String(format: "%02d:%02d:%02d:%02d", hours, minutes, seconds, milliseconds) : String(format: "%02d:%02d:%02d", hours, minutes, seconds)
 		} else if minutes > 0 {
 			return String(format: "%02d:%02d:%02d", minutes, seconds, milliseconds)
 		} else {
