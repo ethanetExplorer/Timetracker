@@ -48,7 +48,7 @@ struct StopwatchView: View {
 						actionButtonLabel(image: "point.forward.to.point.capsulepath.fill", color: .teal)
 					}
 					
-					if isExpanded {
+                    if isExpanded || settings.alwaysShowResetButton {
 						Button(action: stopwatch.reset) {
 							actionButtonLabel(image: "arrow.circlepath", color: .yellow)
 						}

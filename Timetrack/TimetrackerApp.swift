@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct StopwatchApp: App {
-	@StateObject private var settings = Settings(fontChoice: .sansSerif, largerFont: .runningTotal, showSecondaryText: true, showMillisecondsAfterHour: false, expandLapsOnLap: true)
+    @StateObject private var settings = Settings(fontChoice: .sansSerif, largerFont: .runningTotal, showSecondaryText: true, showMillisecondsAfterHour: false, expandLapsOnLap: true, resetToOneStopwatch: false, alwaysShowResetButton: false)
 	@StateObject private var stopwatches = StopwatchViewModel()
 //	@StateObject private var timers = TimerModel()
 	@StateObject private var timerSet = TimerSet()

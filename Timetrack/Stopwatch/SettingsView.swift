@@ -28,20 +28,27 @@ class Settings: Identifiable, ObservableObject {
 	@Published var expandLapsOnLap: Bool {
 		didSet { saveSettings() }
 	}
-//	@Published var alwaysShowResetButton: 
+    @Published var resetToOneStopwatch: Bool {
+        didSet { saveSettings() }
+    }
+	@Published var alwaysShowResetButton: Bool {
+        didSet { saveSettings() }
+    }
 	
-	init(fontChoice: FontStyle, largerFont: TextBodies, showSecondaryText: Bool, showMillisecondsAfterHour: Bool, expandLapsOnLap: Bool) {
+	init(fontChoice: FontStyle, largerFont: TextBodies, showSecondaryText: Bool, showMillisecondsAfterHour: Bool, expandLapsOnLap: Bool, resetToOneStopwatch: Bool, alwaysShowResetButton: Bool) {
 		self.fontChoice = fontChoice
 		self.showSecondaryText = showSecondaryText
 		self.largerFont = largerFont
 		self.showMillisecondsAfterHour = showMillisecondsAfterHour
 		self.expandLapsOnLap = expandLapsOnLap
+        self.resetToOneStopwatch = resetToOneStopwatch
+        self.alwaysShowResetButton = alwaysShowResetButton
 		loadSettings()
 	}
 	
 	private func saveSettings() {
 		do {
-			let settings = SettingsData(fontChoice: fontChoice, largerFont: largerFont, showMillisecondsAfterHour: showMillisecondsAfterHour, showSecondaryText: showSecondaryText, expandLapsOnLap: expandLapsOnLap)
+			let settings = SettingsData(fontChoice: fontChoice, largerFont: largerFont, showMillisecondsAfterHour: showMillisecondsAfterHour, showSecondaryText: showSecondaryText, expandLapsOnLap: expandLapsOnLap, resetToOneStopwatch: resetToOneStopwatch, alwaysShowResetButton: alwaysShowResetButton)
 			let data = try JSONEncoder().encode(settings)
 			UserDefaults.standard.set(data, forKey: "userSettings")
 		} catch {
@@ -58,6 +65,8 @@ class Settings: Identifiable, ObservableObject {
 			self.largerFont = settings.largerFont
 			self.showMillisecondsAfterHour = settings.showMillisecondsAfterHour
 			self.expandLapsOnLap = settings.expandLapsOnLap
+            self.resetToOneStopwatch = settings.resetToOneStopwatch
+            self.alwaysShowResetButton = settings.alwaysShowResetButton
 		} catch {
 			print("Failed to load settings: \(error)")
 		}
@@ -69,6 +78,8 @@ class Settings: Identifiable, ObservableObject {
 		let showMillisecondsAfterHour: Bool
 		let showSecondaryText: Bool
 		let expandLapsOnLap: Bool
+        let resetToOneStopwatch: Bool
+        let alwaysShowResetButton: Bool
 	}
 }
 
@@ -82,21 +93,27 @@ struct SettingsView: View {
 	var body: some View {
 		NavigationStack {
 			Form {
-				Picker("Font", selection: $settingsConfiguration.fontChoice) {
-					Text("Sans Serif")
-						.tag(FontStyle.sansSerif)
-					Text("Monospaced")
-						.tag(FontStyle.monospace)
-				}
-				Toggle("Show secondary text in stopwatch", isOn: $settingsConfiguration.showSecondaryText)
-				Picker("Larger text in stopwatch shows", selection: $settingsConfiguration.largerFont) {
-					Text("Running total")
-						.tag(TextBodies.runningTotal)
-					Text("Time since last lap")
-						.tag(TextBodies.timeSinceLastLap)
-				}
-				Toggle("Show milliseconds after one hour", isOn: $settingsConfiguration.showMillisecondsAfterHour)
-				Toggle("Expand laps panel upon lap", isOn: $settingsConfiguration.expandLapsOnLap)
+                Section(header: Text("General")) {
+                    Picker("Font", selection: $settingsConfiguration.fontChoice) {
+                        Text("Sans Serif")
+                            .tag(FontStyle.sansSerif)
+                        Text("Monospaced")
+                            .tag(FontStyle.monospace)
+                    }
+                }
+                Section(header: Text("Stopwatch Settings")) {
+                    Toggle("Show secondary text in stopwatch", isOn: $settingsConfiguration.showSecondaryText)
+                    Picker("Larger text in stopwatch shows", selection: $settingsConfiguration.largerFont) {
+                        Text("Running total")
+                            .tag(TextBodies.runningTotal)
+                        Text("Time since last lap")
+                            .tag(TextBodies.timeSinceLastLap)
+                    }
+                    Toggle("Show milliseconds after one hour", isOn: $settingsConfiguration.showMillisecondsAfterHour)
+                    Toggle("Expand laps panel upon lap", isOn: $settingsConfiguration.expandLapsOnLap)
+                    Toggle("Clearing stopwatches leaves one stopwatch", isOn: $settingsConfiguration.resetToOneStopwatch)
+                    Toggle("Always show reset stopwatch button", isOn: $settingsConfiguration.alwaysShowResetButton)
+                }
 			}
 			.navigationTitle("Settings")
 			.navigationBarTitleDisplayMode(.inline)
