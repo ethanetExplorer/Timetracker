@@ -9,102 +9,107 @@ import SwiftUI
 import Combine
 
 class TimersViewModel: ObservableObject {
-	@Published var timers: [TimerItem] = [TimerItem(label: "Timer 1", time: 0)]
+	@Published var timers: [TimerItem] = [TimerItem(label: "Timer 1", time: 60)]
 }
 
 struct TimersView: View {
 	
 	@EnvironmentObject var settings: Settings
-	@EnvironmentObject var timerViewModel: TimersViewModel
+	@ObservedObject var timerSet: TimerSet = TimerSet()
+	@Environment(\.dismiss) var dismiss
 	@State var timerText = ""
 	@State var presentCreateTimerSheet = false
 	@State var showAlert = false
 	
 	var body: some View {
 		NavigationStack {
-			ScrollView {
-				ForEach(timerViewModel.timers) { timer in
-					HStack {
-						VStack(alignment:.leading) {
-							Text(timer.label)
-								.multilineTextAlignment(.leading)
-								.foregroundStyle(.gray)
-							Text(formatTime(input: timer.time))
-								.font(.title)
-								.monospaced(settings.fontChoice == .monospace)
+			VStack {
+				ScrollView {
+					ForEach(timerSet.timers) { timer in
+						HStack {
+							VStack(alignment:.leading) {
+								Text(timer.label)
+									.multilineTextAlignment(.leading)
+									.foregroundStyle(.gray)
+								Text(formatTime(input: timer.time))
+									.font(.title)
+									.monospaced(settings.fontChoice == .monospace)
+							}
+							Spacer()
+							if timer.status == .notStarted || timer.status == .paused {
+								Button {
+									timer.start()
+								} label: {
+									actionButtonLabel(image: "play.fill", color: .green)
+								}
+							} else if timer.status == .finished {
+								actionButtonLabel(image: "flag.pattern.checkered", color: .pink)
+							} else {
+								Button {
+									timer.stop()
+								} label: {
+									actionButtonLabel(image: "stop.fill", color: .red)
+								}
+							}
+							Button {
+								timer.reset()
+							} label: {
+								actionButtonLabel(image: "arrow.circlepath", color: .yellow)
+							}
+							.contextMenu {
+								Button(role: .destructive) {
+									showAlert = true
+								} label: {
+									Text("Delete \(timer.label)")
+									Image(systemName: "bin.fill")
+								}
+							}
+							//					.alert("Delete \(timer.label)", isPresented: $showAlert) {
+							//						Button("Cancel", role: .cancel) {
+							//							showAlert = false
+							//						}
+							//						Button("Delete", role: .destructive) {
+							//							timerViewModel.timers.remove(at: timer.index)
+							//							showAlert = false
+							//						}
+							//					}
+							
 						}
-						Spacer()
-						Button {
-							timer.start()
-						} label: {
-							actionButtonLabel(image: "play.fill", color: .green)
-						}
-						Button {
-							timer.stop()
-						} label: {
-							actionButtonLabel(image: "stop.fill", color: .red)
-						}
-						Button {
-							timer.reset()
-						} label: {
-							actionButtonLabel(image: "arrow.circlepath", color: .yellow)
-						}
+						.padding()
+						
 					}
-					.padding()
-					.contextMenu {
-						Button(role: .destructive) {
-							showAlert = true
-						} label: {
-							Text("Delete \(timer.label)")
-							Image(systemName: "bin.fill")
-						}
-					}
-//					.alert("Delete \(timer.label)", isPresented: $showAlert) {
-//						Button("Cancel", role: .cancel) {
-//							showAlert = false
-//						}
-//						Button("Delete", role: .destructive) {
-//							timerViewModel.timers.remove(at: timer.index)
-//							showAlert = false
-//						}
-//					}
 				}
-			}
-			Spacer()
-			HStack {
-				TextField("Create new timer", text: $timerText)
-					.keyboardType(.decimalPad)
-					.padding(.horizontal, 8)
-					.padding(.vertical, 5)
-					.overlay {
-						RoundedRectangle(cornerRadius: 8, style: .continuous)
-							.stroke(Color.gray, lineWidth: 0.75)
-							.opacity(0.25)
-					}
-					.customKeyboard(.timerInputBoard)
-					.onCustomSubmit {
-						timerViewModel.timers.append(TimerItem(label: "Timer \(timerViewModel.timers.count + 1)", time: processTimerText(input: timerText)))
+				Spacer()
+				HStack {
+					TextField("Create new timer", text: $timerText)
+						.keyboardType(.decimalPad)
+						.padding(.horizontal, 8)
+						.padding(.vertical, 5)
+						.overlay {
+							RoundedRectangle(cornerRadius: 8, style: .continuous)
+								.stroke(Color.gray, lineWidth: 0.75)
+								.opacity(0.25)
+						}
+						.customKeyboard(.timerInputBoard)
+						.onCustomSubmit {
+							timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: processTimerText(input: timerText)))
+							timerText = ""
+						}
+					Button {
+						timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: processTimerText(input: timerText)))
 						timerText = ""
+					} label: {
+						Image(systemName: "plus.circle.fill")
+							.font(.largeTitle)
 					}
-					.overlay {
-						RoundedRectangle(cornerRadius: 8, style: .continuous)
-							.stroke(Color.gray, lineWidth: 0.75)
-							.opacity(0.25)
-					}
-				Button {
-					timerViewModel.timers.append(TimerItem(label: "Timer \(timerViewModel.timers.count + 1)", time: processTimerText(input: timerText)))
-					timerText = ""
-				} label: {
-					Image(systemName: "plus.circle.fill")
-						.font(.largeTitle)
 				}
-			}
-			.padding()
-			.navigationTitle("Timers")
-			.navigationBarTitleDisplayMode(.inline)
-			.sheet(isPresented: $presentCreateTimerSheet) {
-				VStack {
-					Text("Hello")
+				.padding()
+				.navigationTitle("Timers")
+				.navigationBarTitleDisplayMode(.inline)
+				.sheet(isPresented: $presentCreateTimerSheet) {
+					VStack {
+						Text("Hello")
+					}
 				}
 			}
 		}

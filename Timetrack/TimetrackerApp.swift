@@ -11,8 +11,7 @@ import SwiftUI
 struct StopwatchApp: App {
     @StateObject private var settings = Settings(fontChoice: .sansSerif, largerFont: .runningTotal, showSecondaryText: true, showMillisecondsAfterHour: false, expandLapsOnLap: true, resetToOneStopwatch: false, alwaysShowResetButton: false)
 	@StateObject private var stopwatches = StopwatchViewModel()
-	@Environment(\.scenePhase) var scenePhase
-
+	@StateObject private var timers = TimersViewModel()
 	
 //	@AppStorage("screen") var screenNumber: Int = 1 
 	
@@ -33,6 +32,7 @@ struct StopwatchApp: App {
 				
 				Tab("Timer", systemImage: "timer") {
 					TimersView()
+						.environmentObject(timers)
 						.environmentObject(settings)
 				}
 				
