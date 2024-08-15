@@ -134,7 +134,7 @@ struct StopwatchesMainView: View {
                                 .font(.largeTitle)
                         }
                     }
-                    .padding(8)
+                    .padding()
                 }
                 Spacer()
             }

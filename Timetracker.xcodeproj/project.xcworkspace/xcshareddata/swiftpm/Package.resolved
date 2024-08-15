@@ -1,0 +1,24 @@
+{
+  "originHash" : "3a1bfdf51ea1829285adcd29babad6d53ddfdf103b7ba1323b322e158e81e736",
+  "pins" : [
+    {
+      "identity" : "customkeyboardkit?tab=readme-ov-file",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/paescebu/CustomKeyboardKit?tab=readme-ov-file",
+      "state" : {
+        "revision" : "7071c506d22c622d10fdf9676ffb54f8b3dc352b",
+        "version" : "1.0.4"
+      }
+    },
+    {
+      "identity" : "swiftui-introspect",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/siteline/SwiftUI-Introspect.git",
+      "state" : {
+        "revision" : "807f73ce09a9b9723f12385e592b4e0aaebd3336",
+        "version" : "1.3.0"
+      }
+    }
+  ],
+  "version" : 3
+}

@@ -8,181 +8,105 @@
 import SwiftUI
 import Combine
 
+class TimersViewModel: ObservableObject {
+	@Published var timers: [TimerItem] = [TimerItem(label: "Timer 1", time: 0)]
+}
+
 struct TimersView: View {
 	
-	@ObservedObject var timerSet = TimerSet()
 	@EnvironmentObject var settings: Settings
-	
-	@State var selectedTimer: CountdownTimer = CountdownTimer(label: "Timer Example", duration: 0, remainingTime: 0, isRunning: false)
-	@State var showDeleteAlert = false
-	@State var showCreateTimerAlert = false
-	@State var newTimerTimeText = ""
-	@State var sequentialTimerEnabled = false
+	@EnvironmentObject var timerViewModel: TimersViewModel
+	@State var timerText = ""
+	@State var presentCreateTimerSheet = false
+	@State var showAlert = false
 	
 	var body: some View {
 		NavigationStack {
-			Toggle("Sequential timers", isOn: $sequentialTimerEnabled)
-				.toggleStyle(.switch)
-				.padding(.horizontal)
 			ScrollView {
-				if !timerSet.timers.isEmpty  {
-					ForEach(timerSet.timers) { timer in
-						TimerRowView(timer: timer, settings: _settings, selectedTimer: $selectedTimer, showDeleteAlert: $showDeleteAlert)
-							.contextMenu {
-								Button {
-									selectedTimer = timer
-									showDeleteAlert = true
-								} label: {
-									HStack {
-										Image(systemName: "trash")
-										Text("Delete timer")
-									}
-								}
-							}
+				ForEach(timerViewModel.timers) { timer in
+					HStack {
+						VStack(alignment:.leading) {
+							Text(timer.label)
+								.multilineTextAlignment(.leading)
+								.foregroundStyle(.gray)
+							Text(formatTime(input: timer.time))
+								.font(.title)
+								.monospaced(settings.fontChoice == .monospace)
+						}
+						Spacer()
+						Button {
+							timer.start()
+						} label: {
+							actionButtonLabel(image: "play.fill", color: .green)
+						}
+						Button {
+							timer.stop()
+						} label: {
+							actionButtonLabel(image: "stop.fill", color: .red)
+						}
+						Button {
+							timer.reset()
+						} label: {
+							actionButtonLabel(image: "arrow.circlepath", color: .yellow)
+						}
 					}
-				}
-				Spacer()
-				HStack {
-					Button {
-						timerSet.timers.append(CountdownTimer(label: "Timer \(timerSet.timers.count + 1)", duration: 60, remainingTime: 60, isRunning: false))
-						timerSet.timers.last?.start()
-					} label: {
-						Text("1m")
+					.padding()
+					.contextMenu {
+						Button(role: .destructive) {
+							showAlert = true
+						} label: {
+							Text("Delete \(timer.label)")
+							Image(systemName: "bin.fill")
+						}
 					}
-					.buttonStyle(.bordered)
-					
-					Button {
-						timerSet.timers.append(CountdownTimer(label: "Timer \(timerSet.timers.count + 1)", duration: 300, remainingTime: 300, isRunning: false))
-						timerSet.timers.last?.start()
-					} label: {
-						Text("5m")
-					}
-					.buttonStyle(.bordered)
-					
-					Button {
-						timerSet.timers.append(CountdownTimer(label: "Timer \(timerSet.timers.count + 1)", duration: 600, remainingTime: 600, isRunning: false))
-						timerSet.timers.last?.start()
-					} label: {
-						Text("10m")
-					}
-					.buttonStyle(.bordered)
-					Button {
-						showCreateTimerAlert = true
-					} label: {
-						Text("Custom")
-					}
-					.buttonStyle(.borderedProminent)
+//					.alert("Delete \(timer.label)", isPresented: $showAlert) {
+//						Button("Cancel", role: .cancel) {
+//							showAlert = false
+//						}
+//						Button("Delete", role: .destructive) {
+//							timerViewModel.timers.remove(at: timer.index)
+//							showAlert = false
+//						}
+//					}
 				}
-				.padding(.vertical)
-				
-				if timerSet.timers.isEmpty {
-					Spacer()
-				}
-			}
-			.navigationTitle("Timers")
-			.navigationBarTitleDisplayMode(.inline)
-			
-			.alert("Delete \(selectedTimer.label ?? "timer")", isPresented: $showDeleteAlert) {
-				Button("Cancel", role: .cancel) {
-					showDeleteAlert = false
-				}
-				Button("Delete", role: .destructive) {
-					if selectedTimer != nil {
-						selectedTimer.isRunning = false
-						selectedTimer.remainingTime = 0
-						selectedTimer.duration = 0
-						timerSet.deleteTimer(by: selectedTimer.id)
-					}
-					showDeleteAlert = false
-				}
-			}
-			.alert(
-				Text("Create timer"),
-				isPresented: $showCreateTimerAlert
-			) {
-				Button("Cancel", role: .cancel) {
-					showCreateTimerAlert = false
-				}
-				Button("OK") {
-					if newTimerTimeText != nil {
-						timerSet.timers.append(CountdownTimer(label: "Timer \(timerSet.timers.count + 1)", duration: Double(newTimerTimeText)!, remainingTime: Double(newTimerTimeText)!, isRunning: true))
-					}
-				}
-				TextField("Timer duration (s)", text: $newTimerTimeText)
-					.keyboardType(.decimalPad)
-				//				DatePicker("Timer duration", selection: $newTimerTimeText)
-			} message: {
-				Text("Time")
-			}
-		}
-	}
-}
-
-struct TimerRowView: View {
-	@ObservedObject var timer: CountdownTimer
-	@EnvironmentObject var settings: Settings
-	
-	@Binding var selectedTimer: CountdownTimer
-	@Binding var showDeleteAlert: Bool
-	
-	var body: some View {
-		HStack {
-			VStack(alignment: .leading) {
-				Text(timer.label)
-					.foregroundStyle(.gray)
-					.font(.subheadline)
-				Text(formatTime(input: timer.remainingTime))
-					.font(.largeTitle)
-					.monospaced(settings.fontChoice == .monospace)
 			}
 			Spacer()
 			HStack {
-				if timer.isRunning {
-					Button {
-						timer.stop()
-					} label: {
-						actionButtonLabel(image: "stop.fill", color: .red)
+				TextField("Create new timer", text: $timerText)
+					.keyboardType(.decimalPad)
+					.padding(.horizontal, 8)
+					.padding(.vertical, 5)
+					.overlay {
+						RoundedRectangle(cornerRadius: 8, style: .continuous)
+							.stroke(Color.gray, lineWidth: 0.75)
+							.opacity(0.25)
 					}
-				} else if timer.remainingTime == 0 {
-					Button {
-						selectedTimer = timer
-						showDeleteAlert = true
-					} label: {
-						actionButtonLabel(image: "trash.fill", color: .red)
+					.customKeyboard(.timerInputBoard)
+					.onCustomSubmit {
+						timerViewModel.timers.append(TimerItem(label: "Timer \(timerViewModel.timers.count + 1)", time: processTimerText(input: timerText)))
+						timerText = ""
 					}
-				} else {
-					Button {
-						timer.start()
-					} label: {
-						actionButtonLabel(image: "play.fill", color: .green)
+					.overlay {
+						RoundedRectangle(cornerRadius: 8, style: .continuous)
+							.stroke(Color.gray, lineWidth: 0.75)
+							.opacity(0.25)
 					}
-				}
 				Button {
-					timer.reset()
+					timerViewModel.timers.append(TimerItem(label: "Timer \(timerViewModel.timers.count + 1)", time: processTimerText(input: timerText)))
+					timerText = ""
 				} label: {
-					actionButtonLabel(image: "arrow.circlepath", color: .yellow)
+					Image(systemName: "plus.circle.fill")
+						.font(.largeTitle)
 				}
 			}
-		}
-		.padding(.horizontal)
-	}
-	
-	func formatTime(input: Double) -> String {
-		let seconds = Int(input) % 60
-		let minutes = (Int(input) / 60) % 60
-		let hours = Int(input) / 3600
-		let milliseconds = Int((input.truncatingRemainder(dividingBy: 1)) * 100)
-		
-		if hours > 0 {
-			if settings.showMillisecondsAfterHour {
-				return String(format: "%02d:%02d:%02d:%02d", hours, minutes, seconds, milliseconds)
-			} else {
-				return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+			.padding()
+			.navigationTitle("Timers")
+			.navigationBarTitleDisplayMode(.inline)
+			.sheet(isPresented: $presentCreateTimerSheet) {
+				VStack {
+					Text("Hello")
+				}
 			}
-		} else if minutes > 0 {
-			return String(format: "%02d:%02d:%02d", minutes, seconds, milliseconds)
-		} else {
-			return String(format: "00:%02d:%02d", seconds, milliseconds)
 		}
 	}
 	
@@ -193,5 +117,60 @@ struct TimerRowView: View {
 			.padding(10)
 			.background(color.opacity(0.2))
 			.clipShape(Circle())
+	}
+	
+	func formatTime(input: Double) -> String {
+		let seconds = Int(input) % 60
+		let minutes = (Int(input) / 60) % 60
+		let hours = Int(input) / 3600
+		let milliseconds = Int((input.truncatingRemainder(dividingBy: 1)) * 100)
+		
+		if hours > 0 {
+			return settings.showMillisecondsAfterHour ? String(format: "%02d:%02d:%02d:%02d", hours, minutes, seconds, milliseconds) : String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+		} else if minutes > 0 {
+			return String(format: "%02d:%02d:%02d", minutes, seconds, milliseconds)
+		} else {
+			return String(format: "00:%02d:%02d", seconds, milliseconds)
+		}
+	}
+	
+	func processTimerText(input: String) -> Double {
+		
+		var totalSeconds: Double = 0
+		
+		let timeUnits: [(String, Double)] = [
+			("h", 3600),  // 1 hour = 3600 seconds
+			("m", 60),    // 1 minute = 60 seconds
+			("s", 1)      // 1 second = 1 second
+		]
+		
+		// Regular expression to match formats like 1h, 30m, 45s
+		let unitRegex = try! NSRegularExpression(pattern: #"(\d+(\.\d+)?)([hms])"#, options: [])
+		let matches = unitRegex.matches(in: input, options: [], range: NSRange(input.startIndex..., in: input))
+		
+		for match in matches {
+			let valueRange = Range(match.range(at: 1), in: input)!
+			let unitRange = Range(match.range(at: 3), in: input)!
+			
+			let value = Double(input[valueRange]) ?? 0
+			let unit = String(input[unitRange])
+			
+			if let factor = timeUnits.first(where: { $0.0 == unit })?.1 {
+				totalSeconds += value * factor
+			}
+		}
+		
+		// Handle hh:mm:ss and mm:ss formats
+		let colonSeparated = input.split(separator: ":")
+		if colonSeparated.count > 1 {
+			var multiplier = 1.0
+			for component in colonSeparated.reversed() {
+				if let value = Double(component) {
+					totalSeconds += value * multiplier
+					multiplier *= 60
+				}
+			}
+		}
+		return totalSeconds
 	}
 }

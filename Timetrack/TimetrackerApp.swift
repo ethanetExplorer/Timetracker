@@ -11,8 +11,6 @@ import SwiftUI
 struct StopwatchApp: App {
     @StateObject private var settings = Settings(fontChoice: .sansSerif, largerFont: .runningTotal, showSecondaryText: true, showMillisecondsAfterHour: false, expandLapsOnLap: true, resetToOneStopwatch: false, alwaysShowResetButton: false)
 	@StateObject private var stopwatches = StopwatchViewModel()
-//	@StateObject private var timers = TimerModel()
-	@StateObject private var timerSet = TimerSet()
 	@Environment(\.scenePhase) var scenePhase
 
 	
@@ -34,30 +32,14 @@ struct StopwatchApp: App {
 				}
 				
 				Tab("Timer", systemImage: "timer") {
-					TimersView(timerSet: timerSet)
+					TimersView()
 						.environmentObject(settings)
-						.onAppear {
-							timerSet.loadTimers()
-						}
-						.onDisappear {
-							timerSet.saveTimers()
-						}
-					
 				}
 				
 				Tab("Settings", systemImage: "gear") {
 					SettingsView()
 						.environmentObject(settings)
 				}
-			}
-		}
-		
-		.onChange(of: scenePhase) { newPhase in
-			if newPhase == .background {
-				let currentTimestamp = Date().timeIntervalSince1970
-				print("Saving lastCloseDate: \(currentTimestamp)")
-				UserDefaults.standard.set(currentTimestamp, forKey: "lastCloseDate")
-				timerSet.saveTimers()
 			}
 		}
 	}

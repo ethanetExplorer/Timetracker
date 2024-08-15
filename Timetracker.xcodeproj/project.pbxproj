@@ -16,6 +16,7 @@
 		662BCFE72C1A7A2700A9F721 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 662BCFE62C1A7A2700A9F721 /* Assets.xcassets */; };
 		662BCFEB2C1A7A2700A9F721 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 662BCFEA2C1A7A2700A9F721 /* Preview Assets.xcassets */; };
 		665574122C1B026200127438 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665574112C1B026200127438 /* SettingsView.swift */; };
+		AAF6E10B2C6DFC2600C5D832 /* CustomKeyboardKit in Frameworks */ = {isa = PBXBuildFile; productRef = AAF6E10A2C6DFC2600C5D832 /* CustomKeyboardKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				TimerItem.swift,
+				TimerKeyboard.swift,
 				TimersView.swift,
 			);
 			target = 662BCFDE2C1A7A2600A9F721 /* Stopwatch */;
@@ -53,6 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAF6E10B2C6DFC2600C5D832 /* CustomKeyboardKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,6 +157,9 @@
 				Base,
 			);
 			mainGroup = 662BCFD62C1A7A2600A9F721;
+			packageReferences = (
+				AAF6E1092C6DFC2600C5D832 /* XCRemoteSwiftPackageReference "CustomKeyboardKit" */,
+			);
 			productRefGroup = 662BCFE02C1A7A2600A9F721 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -421,6 +427,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AAF6E1092C6DFC2600C5D832 /* XCRemoteSwiftPackageReference "CustomKeyboardKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/paescebu/CustomKeyboardKit?tab=readme-ov-file";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AAF6E10A2C6DFC2600C5D832 /* CustomKeyboardKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAF6E1092C6DFC2600C5D832 /* XCRemoteSwiftPackageReference "CustomKeyboardKit" */;
+			productName = CustomKeyboardKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 662BCFD72C1A7A2600A9F721 /* Project object */;
 }
