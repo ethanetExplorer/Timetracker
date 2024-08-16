@@ -22,21 +22,20 @@ class TimerItem: ObservableObject, Identifiable {
     private var timer: Timer?
     
     func start() {
-        if time > 0 {
-            self.status = .running
-            // Assign the created timer to the `timer` property
-            timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
-                guard let self = self else { return }
-                self.time -= 0.01
-                
-                // Stop the timer when time reaches zero
-                if self.time <= 0 {
-                    self.stop()
-                }
-            }
-        } else {
-            self.status = .finished
-        }
+		if time > 0 {
+			self.status = .running
+			timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
+				guard let self = self else { return }
+				DispatchQueue.main.async {
+					self.time -= 0.01
+					if self.time <= 0 {
+						self.stop()
+					}
+				}
+			}
+		} else {
+			self.status = .finished
+		}
     }
     
     func stop() {
