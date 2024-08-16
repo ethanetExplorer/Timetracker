@@ -8,10 +8,6 @@
 import SwiftUI
 import Combine
 
-class TimersViewModel: ObservableObject {
-	@Published var timers: [TimerItem] = [TimerItem(label: "Timer 1", time: 60)]
-}
-
 struct TimersView: View {
 	
 	@EnvironmentObject var settings: Settings
@@ -20,16 +16,51 @@ struct TimersView: View {
 	@State var timerText = ""
 	@State var presentCreateTimerSheet = false
 	@State var showAlert = false
+	@State var provideFeedback = true
 	
 	var body: some View {
 		NavigationStack {
 			VStack {
-				ScrollView {
-					ForEach(timerSet.timers) { timer in
-						TimerItemView(timer: timer)
+				if !timerSet.timers.isEmpty {
+					ScrollView {
+						ForEach(timerSet.timers) { timer in
+							TimerItemView(timer: timer)
+						}
 					}
+					Spacer()
 				}
-				Spacer()
+				Button {
+					timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: 30))
+					timerText = ""
+				} label: {
+					Text("30s")
+						.padding(4)
+				}
+				.buttonStyle(.borderedProminent)
+				Button {
+					timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: 60))
+					timerText = ""
+				} label: {
+					Text("1m")
+						.padding(4)
+				}
+				.buttonStyle(.borderedProminent)
+				Button {
+					timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: 300))
+					timerText = ""
+				} label: {
+					Text("5m")
+						.padding(4)
+				}
+				Button {
+					timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: 600))
+					timerText = ""
+				} label: {
+					Text("10m")
+						.padding(4)
+				}
+				.buttonStyle(.borderedProminent)
+				.buttonStyle(.borderedProminent)
 				HStack {
 					TextField("Create new timer", text: $timerText)
 						.keyboardType(.decimalPad)
@@ -45,13 +76,6 @@ struct TimersView: View {
 							timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: processTimerText(input: timerText)))
 							timerText = ""
 						}
-					Button {
-						timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: 60))
-						timerText = ""
-					} label: {
-						Text("1m")
-						
-					}
 				}
 				.padding()
 				.navigationTitle("Timers")
@@ -177,6 +201,7 @@ struct TimerItemView: View {
 			.padding(10)
 			.background(color.opacity(0.2))
 			.clipShape(Circle())
+			.sensoryFeedback(.success, trigger: true)
 	}
 	
 	func formatTime(input: Double) -> String {

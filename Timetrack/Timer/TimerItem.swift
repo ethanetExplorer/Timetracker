@@ -78,6 +78,12 @@ class TimerSet: ObservableObject {
 		}
 	}
 	
+	func deleteTimer(by id: UUID) {
+		if let index = timers.firstIndex(where: { $0.id == id }) {
+			timers.remove(at: index)
+		}
+	}
+	
 	func sequentialRun() {
 		for index in (0...timers.count-1) {
 			timers[index].start()
