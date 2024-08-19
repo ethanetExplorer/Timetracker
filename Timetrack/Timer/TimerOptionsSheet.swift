@@ -79,14 +79,21 @@ struct TimerOptionsSheet: View {
 															  TimerOption(label: "Rest (Extended)", duration: 1200)]
 					   )
 	]
+	
+	let columns = [
+		GridItem(.adaptive(minimum: 48))
+	]
+	
 	var body: some View {
 		NavigationStack {
 			VStack(alignment: .leading) {
 				Text("Timers")
-					.padding(.top, 20)
+					.padding(.top, 40)
 					.bold()
 					.font(.title)
 					.multilineTextAlignment(.leading)
+				Text("Adds a timer with its associated time to the screen")
+					.foregroundStyle(.gray)
 				ScrollView(.horizontal) {
 					HStack {
 						ForEach(timerOptions) { option in
@@ -94,11 +101,11 @@ struct TimerOptionsSheet: View {
 								timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: option.duration))
 							} label: {
 								Text(option.label)
-									.font(.title2)
-									.padding()
+									.font(.title3)
 									.foregroundStyle(Color("TextColor"))
+									.padding(16)
 									.background(getBackgroundColor(number: option.duration))
-									.clipShape(.circle)
+									.clipShape(Circle())
 							}
 						}
 						
@@ -107,17 +114,18 @@ struct TimerOptionsSheet: View {
 							showAddTimerOptionSheet = true
 						} label: {
 							Image(systemName: "plus")
-								.font(.title2)
-								.padding()
+								.font(.title)
 								.foregroundStyle(Color("TextColor"))
+								.padding(16)
 								.background(.accent)
-								.clipShape(.circle)
+								.clipShape(Circle())
 						}
 					}
 				}
 				.scrollIndicators(ScrollIndicatorVisibility.visible)
+				
 				Text("Timer Sets")
-					.padding(.top, 20)
+					.padding(.top, 30)
 					.bold()
 					.font(.title)
 					.multilineTextAlignment(.leading)
@@ -132,17 +140,23 @@ struct TimerOptionsSheet: View {
 									timerSet.addTimer(label: timer.label, time: timer.duration)
 								}
 							} label: {
-								VStack {
-									LazyVStack {
+								VStack(alignment: .leading) {
+									LazyVGrid(columns: columns, spacing: 12) {
 										ForEach(option.timers) { timer in
 											Text(formatTime(input: timer.duration))
-
+												.foregroundStyle(Color("TextColor"))
 										}
+										.padding(.horizontal, 4)
 									}
-									.background(.accent)
+									.padding(.vertical, 4)
+									.background(.accent.opacity(0.5))
+									.clipShape(RoundedRectangle(cornerRadius: 8))
 									Text(option.label)
+										.font(.title3)
+										.foregroundStyle(.gray)
+										.multilineTextAlignment(.leading)
 								}
-								.padding(4)
+								.padding(6)
 								.foregroundStyle(Color("TextColor"))
 							}
 						}
@@ -213,9 +227,19 @@ struct TimerOptionsSheet: View {
 		let hours = Int(input) / 3600
 		
 		if hours > 0 {
-			return String(format: "%02dh:%02dm", hours, minutes)
-		} else  {
-			return String(format: "%02dm:%02ds", minutes, seconds)
+			if minutes > 0 {
+				return String(format: "%dh %dm", hours, minutes)
+			} else {
+				return String(format: "%dh ", hours)
+			}
+		} else if minutes > 0 {
+			if seconds > 0 {
+				return String(format: "%dm %ds", minutes, seconds)
+			} else {
+				return String(format: "%dm", minutes)
+			}
+		} else {
+			return String(format: "%ds", seconds)
 		}
 	}
 }
