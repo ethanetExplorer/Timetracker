@@ -135,7 +135,7 @@ struct TimerOptionsSheet: View {
 					VStack {
 						ForEach(timerSetOptions) { option in
 							Button {
-								timerSet.clearTimers()
+								timerSet.timers = []
 								for timer in option.timers {
 									timerSet.addTimer(label: timer.label, time: timer.duration)
 								}

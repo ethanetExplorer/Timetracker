@@ -167,7 +167,7 @@ struct TimersView: View {
 					showClearAlert = false
 				}
 				Button("Clear", role: .destructive) {
-					timerSet.clearTimers()
+					timerSet.timers = []
 					showClearAlert = false
 				}
 			}
