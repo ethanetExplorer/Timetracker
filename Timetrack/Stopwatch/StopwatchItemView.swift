@@ -47,28 +47,23 @@ struct StopwatchView: View {
 					}
 				}
 			}
-//			.padding(.bottom, 8)
 			
 			if isExpanded {
 				ForEach(stopwatch.laps.reversed()) { lap in
 					HStack {
 						Text("Lap \(lap.index)")
-							.padding(.horizontal, 4)
 							.foregroundStyle(.gray)
 						Spacer()
 						Text(formatTime(input: lap.timeElapsedSinceLastLap))
-							.padding(.horizontal, 4)
 							.monospaced(settings.fontChoice == .monospace)
 							.foregroundStyle(getLapTextColor(lap: lap))
 						Text(formatTime(input: lap.timeRunningTotal))
-							.padding(.horizontal, 4)
 							.monospaced(settings.fontChoice == .monospace)
 					}
 				}	
 			}
 		}
 		.padding(.horizontal)
-		.contentShape(Rectangle())
 		.onTapGesture {
 			withAnimation {
 				isExpanded.toggle()
@@ -109,7 +104,7 @@ struct StopwatchView: View {
 		} else if lap.timeElapsedSinceLastLap == worstLap?.timeElapsedSinceLastLap {
 			return .red
 		} else {
-			return .primary
+			return Color("TextColor")
 		}
 	}
 	

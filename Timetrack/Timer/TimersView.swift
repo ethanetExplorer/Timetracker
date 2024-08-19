@@ -11,12 +11,18 @@ import Combine
 struct TimersView: View {
 	
 	@EnvironmentObject var settings: Settings
-	@ObservedObject var timerSet: TimerSet = TimerSet()
 	@Environment(\.dismiss) var dismiss
+	@ObservedObject var timerSet: TimerSet = TimerSet()
 	@State var timerText = ""
+	
 	@State var presentCreateTimerSheet = false
-	@State var showAlert = false
+	@State var showTimerCannotBeNilAlert = false
+	@State var showDeleteAlert = false
 	@State var provideFeedback = true
+	@State var showClearAlert = false
+	@State var showMoreOptionsSheet = false
+	
+	@FocusState private var keyboardShown: Bool
 	
 	var body: some View {
 		NavigationStack {
@@ -24,66 +30,145 @@ struct TimersView: View {
 				if !timerSet.timers.isEmpty {
 					ScrollView {
 						ForEach(timerSet.timers) { timer in
-							TimerItemView(timer: timer)
+							if timer.id != timerSet.timers.first?.id {
+								Divider()
+									.padding(0)
+							}
+							TimerItemView(timer: timer, showDeleteAlert: $showDeleteAlert)
+								.contextMenu {
+									Button(role: .destructive) {
+										showDeleteAlert = true
+									} label: {
+										Text("Delete \(timer.label)")
+										Image(systemName: "trash.fill")
+									}
+								}
+								.alert("Delete \(timer.label)", isPresented: $showDeleteAlert) {
+									Button("Cancel", role: .cancel) {
+										showDeleteAlert = false
+									}
+									Button("Delete", role: .destructive) {
+										timerSet.deleteTimer(by: timer.id)
+										showDeleteAlert = false
+									}
+								}
 						}
 					}
 					Spacer()
 				}
-				Button {
-					timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: 30))
-					timerText = ""
-				} label: {
-					Text("30s")
-						.padding(4)
-				}
-				.buttonStyle(.borderedProminent)
-				Button {
-					timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: 60))
-					timerText = ""
-				} label: {
-					Text("1m")
-						.padding(4)
-				}
-				.buttonStyle(.borderedProminent)
-				Button {
-					timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: 300))
-					timerText = ""
-				} label: {
-					Text("5m")
-						.padding(4)
-				}
-				Button {
-					timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: 600))
-					timerText = ""
-				} label: {
-					Text("10m")
-						.padding(4)
-				}
-				.buttonStyle(.borderedProminent)
-				.buttonStyle(.borderedProminent)
-				HStack {
-					TextField("Create new timer", text: $timerText)
-						.keyboardType(.decimalPad)
-						.padding(.horizontal, 8)
-						.padding(.vertical, 5)
-						.overlay {
-							RoundedRectangle(cornerRadius: 8, style: .continuous)
-								.stroke(Color.gray, lineWidth: 0.75)
-								.opacity(0.25)
-						}
-						.customKeyboard(.timerInputBoard)
-						.onCustomSubmit {
-							timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: processTimerText(input: timerText)))
+				if !keyboardShown || showMoreOptionsSheet == false {
+					HStack {
+						Button {
+							timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: 30))
 							timerText = ""
+						} label: {
+							Text("30s")
+								.padding(.horizontal, 4)
 						}
-				}
-				.padding()
-				.navigationTitle("Timers")
-				.navigationBarTitleDisplayMode(.inline)
-				.sheet(isPresented: $presentCreateTimerSheet) {
-					VStack {
-						Text("Hello")
+						.buttonStyle(.borderedProminent)
+						Button {
+							timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: 60))
+							timerText = ""
+						} label: {
+							Text("1m")
+								.padding(.horizontal, 4)
+						}
+						.buttonStyle(.borderedProminent)
+						Button {
+							timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: 300))
+							timerText = ""
+						} label: {
+							Text("5m")
+								.padding(.horizontal, 4)
+						}
+						.buttonStyle(.borderedProminent)
+						Button {
+							timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: 600))
+							timerText = ""
+						} label: {
+							Text("10m")
+								.padding(.horizontal, 4)
+						}
+						.buttonStyle(.borderedProminent)
+						Button {
+							showMoreOptionsSheet = true
+						} label: {
+							HStack {
+								Image(systemName: "plus")
+								Text("More")
+							}
+							.padding(.horizontal, 8)
+						}
+						.buttonStyle(.borderedProminent)
+						.opacity(0.75)
 					}
+					.padding(.horizontal, 8)
+				}
+				TextField("Custom time", text: $timerText)
+					.keyboardType(.decimalPad)
+					.padding(.horizontal, 8)
+					.padding(.vertical, 5)
+					.focused($keyboardShown)
+					.overlay {
+						RoundedRectangle(cornerRadius: 8, style: .continuous)
+							.stroke(Color.gray, lineWidth: 0.75)
+							.opacity(0.25)
+					}
+					.customKeyboard(.timerInputBoard)
+					.onCustomSubmit {
+						if timerText != "" {
+							timerSet.timers.append(TimerItem(label: "Timer \(timerSet.timers.count + 1)", time: processTimerText(input: timerText)))
+						} else {
+							dismiss()
+						}
+						
+						timerText = ""
+					}
+				
+					.alert("Timer must have a value", isPresented: $showTimerCannotBeNilAlert) {
+						Button("OK", role: .cancel) {
+							showTimerCannotBeNilAlert = false
+						}
+					}
+				
+					.padding()
+					.navigationTitle("Timers")
+					.navigationBarTitleDisplayMode(.inline)
+					.sheet(isPresented: $presentCreateTimerSheet) {
+						VStack {
+							Text("Hello")
+						}
+					}
+			}
+			.onTapGesture {
+				keyboardShown = false
+			}
+			.sheet(isPresented: $showMoreOptionsSheet, onDismiss: {
+				showMoreOptionsSheet = false
+			}) {
+				TimerOptionsSheet(timerSet: timerSet)
+					.presentationDetents([.medium, .large])
+					.presentationBackgroundInteraction(.enabled)
+					.presentationBackground(.thinMaterial)
+			}
+			.toolbar {
+				ToolbarItem(placement: .topBarTrailing) {
+					Button {
+						showClearAlert = true
+					} label: {
+						Image(systemName: "xmark.circle")
+							.foregroundStyle(.red)
+					}
+				}
+			}
+			
+			.alert("Clear all timers?", isPresented: $showClearAlert) {
+				Button("Cancel", role: .cancel) {
+					showClearAlert = false
+				}
+				Button("Clear", role: .destructive) {
+					timerSet.clearTimers()
+					showClearAlert = false
 				}
 			}
 		}
@@ -130,92 +215,3 @@ struct TimersView: View {
 	}
 }
 
-struct TimerItemView: View {
-
-	@EnvironmentObject var settings: Settings
-	@ObservedObject var timer: TimerItem
-	@State var showAlert = false
-	
-	var body: some View {
-		HStack {
-			VStack(alignment:.leading) {
-				Text(timer.label)
-					.multilineTextAlignment(.leading)
-					.foregroundStyle(.gray)
-				Text(formatTime(input: timer.time))
-					.font(.title)
-					.monospaced(settings.fontChoice == .monospace)
-//					.onReceive(timer.$time) { _ in
-//						// Force a UI update when `time` changes
-//						self.objectWillChange.send()
-//					}
-			}
-			Spacer()
-			if timer.status == .notStarted || timer.status == .paused {
-				Button {
-					timer.start()
-				} label: {
-					actionButtonLabel(image: "play.fill", color: .green)
-				}
-			} else if timer.status == .finished {
-				actionButtonLabel(image: "flag.pattern.checkered", color: .pink)
-			} else {
-				Button {
-					timer.stop()
-				} label: {
-					actionButtonLabel(image: "stop.fill", color: .red)
-				}
-			}
-			Button {
-				timer.reset()
-			} label: {
-				actionButtonLabel(image: "arrow.circlepath", color: .yellow)
-			}
-			.contextMenu {
-				Button(role: .destructive) {
-					showAlert = true
-				} label: {
-					Text("Delete \(timer.label)")
-					Image(systemName: "bin.fill")
-				}
-			}
-			//					.alert("Delete \(timer.label)", isPresented: $showAlert) {
-			//						Button("Cancel", role: .cancel) {
-			//							showAlert = false
-			//						}
-			//						Button("Delete", role: .destructive) {
-			//							timerViewModel.timers.remove(at: timer.index)
-			//							showAlert = false
-			//						}
-			//					}
-			
-		}
-		.padding()
-	}
-	
-	
-	func actionButtonLabel(image: String, color: Color) -> some View {
-		Image(systemName: image)
-			.font(.title)
-			.foregroundStyle(color)
-			.padding(10)
-			.background(color.opacity(0.2))
-			.clipShape(Circle())
-			.sensoryFeedback(.success, trigger: true)
-	}
-	
-	func formatTime(input: Double) -> String {
-		let seconds = Int(input) % 60
-		let minutes = (Int(input) / 60) % 60
-		let hours = Int(input) / 3600
-		let milliseconds = Int((input.truncatingRemainder(dividingBy: 1)) * 100)
-		
-		if hours > 0 {
-			return settings.showMillisecondsAfterHour ? String(format: "%02d:%02d:%02d:%02d", hours, minutes, seconds, milliseconds) : String(format: "%02d:%02d:%02d", hours, minutes, seconds)
-		} else if minutes > 0 {
-			return String(format: "%02d:%02d:%02d", minutes, seconds, milliseconds)
-		} else {
-			return String(format: "00:%02d:%02d", seconds, milliseconds)
-		}
-	}
-}

@@ -23,6 +23,7 @@ class TimerItem: ObservableObject, Identifiable {
     
     func start() {
 		if time > 0 {
+			self.initialTime = time
 			self.status = .running
 			timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
 				guard let self = self else { return }
@@ -30,6 +31,7 @@ class TimerItem: ObservableObject, Identifiable {
 					self.time -= 0.01
 					if self.time <= 0 {
 						self.stop()
+						self.status = .finished
 					}
 				}
 			}
@@ -82,6 +84,15 @@ class TimerSet: ObservableObject {
 		if let index = timers.firstIndex(where: { $0.id == id }) {
 			timers.remove(at: index)
 		}
+	}
+	
+	func addTimer(label: String, time: Double) {
+		let timer = TimerItem(label: label, time: time)
+		timers.append(timer)
+	}
+	
+	func clearTimers() {
+		self.timers = []
 	}
 	
 	func sequentialRun() {

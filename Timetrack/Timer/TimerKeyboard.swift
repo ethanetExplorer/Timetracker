@@ -10,6 +10,7 @@ import SwiftUI
 import CustomKeyboardKit
 
 extension CustomKeyboard {
+	
     static var timerInputBoard: CustomKeyboard {
         CustomKeyboardBuilder { textDocumentProxy, submit, playSystemFeedback in
             VStack {
@@ -146,6 +147,7 @@ extension CustomKeyboard {
 							.frame(maxWidth: .infinity)
 							.foregroundStyle(.red)
 					}
+					.buttonRepeatBehavior(.enabled)
 				}
 				Button {
 					submit()
@@ -154,7 +156,7 @@ extension CustomKeyboard {
 						.frame(maxWidth: .infinity)
 				}
             }
-			.foregroundStyle(.primary)
+			.foregroundStyle(Color("TextColor"))
             .buttonStyle(.bordered)
             .padding()
         }
