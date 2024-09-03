@@ -6,34 +6,27 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct StopwatchApp: App {
 	
 	@StateObject private var settings = Settings(fontChoice: .sansSerif, largerFont: .runningTotal, showSecondaryText: true, showMillisecondsAfterHour: false, expandLapsOnLap: true, resetToOneStopwatch: false, alwaysShowResetButton: false)
-	@StateObject private var stopwatches = StopwatchViewModel()
 	
-	
-	//	@AppStorage("screen") var screenNumber: Int = 1
 	
 	var body: some Scene {
 		WindowGroup {
 			TabView {
 				Tab("Stopwatch", systemImage: "stopwatch") {
-					StopwatchesMainView()
-						.environmentObject(stopwatches)
+					StopwatchMainView()
 						.environmentObject(settings)
-						.onReceive(NotificationCenter.default.publisher(for: UIApplication.willTerminateNotification)) { _ in
-							stopwatches.saveAllStopwatches()
-						}
-						.onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)) { _ in
-							stopwatches.saveAllStopwatches()
-						}
+						.modelContainer(for: [Stopwatch.self, StopwatchSet.self])
 				}
 				
 				Tab("Timer", systemImage: "timer") {
 					TimersView()
 						.environmentObject(settings)
+						.modelContainer(for: [TimerItem.self, TimerSet.self])
 				}
 				
 				Tab("Settings", systemImage: "gear") {

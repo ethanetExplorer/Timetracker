@@ -6,114 +6,62 @@
 //
 
 import SwiftUI
+import SwiftData
 
-struct StopwatchView: View {
-	@ObservedObject var stopwatch: Stopwatch
-	@EnvironmentObject var settings: Settings
+struct StopwatchItemView: View {
+	@Bindable var stopwatch: Stopwatch
 	
-	@State private var isExpanded = false
-	
+	let timer = Timer.publish(every: 0.01, on: .main, in: .common).autoconnect()
+
 	var body: some View {
-		VStack {
-			HStack {
-				VStack(alignment: .leading) {
-					Text(stopwatch.label)
-						.multilineTextAlignment(.leading)
-						.foregroundStyle(.gray)
-					Text(settings.largerFont == .runningTotal ? formatTime(input: stopwatch.elapsedTime) : formatTime(input: stopwatch.elapsedTime - (stopwatch.laps.last?.timeRunningTotal ?? 0)))
-						.font(.title)
-						.monospaced(settings.fontChoice == .monospace)
-						.multilineTextAlignment(.leading)
-					if settings.showSecondaryText, !stopwatch.laps.isEmpty {
-						Text(settings.largerFont == .timeSinceLastLap ? formatTime(input: stopwatch.elapsedTime) : formatTime(input: stopwatch.elapsedTime - (stopwatch.laps.last?.timeRunningTotal ?? 0)))
-							.font(.title3)
-							.foregroundStyle(.gray)
-							.monospaced(settings.fontChoice == .monospace)
-							.multilineTextAlignment(.leading)
-					}
-				}
-				Spacer()
-				HStack {
-                    Button(action: stopwatch.isRunning ? stopwatch.stop : stopwatch.start) {
-                        stopwatch.isRunning ? actionButtonLabel(image: "stop.fill", color: .red) : actionButtonLabel(image: "play.fill", color: .green)
-                    }
-					Button(action: addLap) {
-						actionButtonLabel(image: "point.forward.to.point.capsulepath.fill", color: .teal)
-					}					
-                    if isExpanded || settings.alwaysShowResetButton {
-						Button(action: stopwatch.reset) {
-							actionButtonLabel(image: "arrow.circlepath", color: .yellow)
-						}
-					}
-				}
+		HStack {
+			VStack(alignment: .leading) {
+				Text("Stopwatch \(stopwatch.id.uuidString.prefix(4))")
+				Text(stopwatch.elapsedTimeString)
+					.font(.title)
 			}
-			
-			if isExpanded {
-				ForEach(stopwatch.laps.reversed()) { lap in
-					HStack {
-						Text("Lap \(lap.index)")
-							.foregroundStyle(.gray)
-						Spacer()
-						Text(formatTime(input: lap.timeElapsedSinceLastLap))
-							.monospaced(settings.fontChoice == .monospace)
-							.foregroundStyle(getLapTextColor(lap: lap))
-						Text(formatTime(input: lap.timeRunningTotal))
-							.monospaced(settings.fontChoice == .monospace)
-					}
-				}	
+			.padding(.leading, 4)
+			Spacer()
+			Button {
+				stopwatch.start()
+			} label: {
+				Image(systemName: "play.fill")
+					.foregroundStyle(.green)
+					.font(.largeTitle)
 			}
+			.padding()
+			Button {
+				stopwatch.stop()
+			} label: {
+				Image(systemName: "stop.fill")
+					.foregroundStyle(.red)
+					.font(.largeTitle)
+			}
+			.padding()
 		}
-		.padding(.horizontal)
-		.onTapGesture {
-			withAnimation {
-				isExpanded.toggle()
+		.onReceive(timer) { _ in
+			if stopwatch.isRunning {
+				stopwatch.updateElapsedTime()
 			}
 		}
 	}
-
-	private func addLap() {
-		stopwatch.lap()
-		if settings.expandLapsOnLap {
-			withAnimation {
-				isExpanded = true
-			}
-		}
-	}
-	
-	func formatTime(input: Double) -> String {
+	func timeString(from input: TimeInterval) -> String {
 		let seconds = Int(input) % 60
 		let minutes = (Int(input) / 60) % 60
 		let hours = Int(input) / 3600
 		let milliseconds = Int((input.truncatingRemainder(dividingBy: 1)) * 100)
 		
 		if hours > 0 {
-            return settings.showMillisecondsAfterHour ? String(format: "%02d:%02d:%02d:%02d", hours, minutes, seconds, milliseconds) : String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+//			return settings.showMillisecondsAfterHour ? String(format: "%02d:%02d:%02d:%02d", hours, minutes, seconds, milliseconds) : String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+			return String(format: "%02d:%02d:%02d:%02d", hours, minutes, seconds, milliseconds)
 		} else if minutes > 0 {
 			return String(format: "%02d:%02d:%02d", minutes, seconds, milliseconds)
 		} else {
 			return String(format: "00:%02d:%02d", seconds, milliseconds)
 		}
 	}
-	
-	func getLapTextColor(lap: Lap) -> Color {
-		let bestLap = stopwatch.laps.min(by: { $0.timeElapsedSinceLastLap < $1.timeElapsedSinceLastLap })
-		let worstLap = stopwatch.laps.max(by: { $0.timeElapsedSinceLastLap < $1.timeElapsedSinceLastLap })
-		
-		if lap.timeElapsedSinceLastLap == bestLap?.timeElapsedSinceLastLap {
-			return .green
-		} else if lap.timeElapsedSinceLastLap == worstLap?.timeElapsedSinceLastLap {
-			return .red
-		} else {
-			return Color("TextColor")
-		}
-	}
-	
-	func actionButtonLabel(image: String, color: Color) -> some View {
-			Image(systemName: image)
-				.font(.title)
-				.foregroundStyle(color)
-				.padding(10)
-				.background(color.opacity(0.2))
-				.clipShape(Circle())
-	}
+}
+
+#Preview {
+	StopwatchItemView(stopwatch: Stopwatch())
 }

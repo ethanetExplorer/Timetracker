@@ -41,7 +41,6 @@
 				TimerItem.swift,
 				TimerItemView.swift,
 				TimerKeyboard.swift,
-				TimerOptionsSheet.swift,
 				TimersView.swift,
 			);
 			target = 662BCFDE2C1A7A2600A9F721 /* Stopwatch */;
