@@ -9,12 +9,20 @@ import Foundation
 import Combine
 import SwiftData
 
-//struct Lap: Identifiable, Codable {
-//	let id = UUID()
-//	var index: Int
-//	var timeRunningTotal: TimeInterval
-//	var timeElapsedSinceLastLap: TimeInterval
-//}
+@Model
+class Lap: Identifiable {
+	var id = UUID()
+	var index: Int
+	var timeRunningTotal: TimeInterval
+	var timeElapsedSinceLastLap: TimeInterval
+	
+	init(id: UUID = UUID(), index: Int, timeRunningTotal: TimeInterval, timeElapsedSinceLastLap: TimeInterval) {
+		self.id = id
+		self.index = index
+		self.timeRunningTotal = timeRunningTotal
+		self.timeElapsedSinceLastLap = timeElapsedSinceLastLap
+	}
+}
 //
 //class Stopwatch: ObservableObject, Identifiable, Codable {
 //	var id = UUID()
@@ -157,19 +165,23 @@ enum StopwatchStates: String, Codable {
 @Model
 class Stopwatch {
 	@Attribute(.unique) var id: UUID
+	var label: String
 	var startTime: Date?
 	var timeLastPaused: Date?
 	var elapsedTime: TimeInterval
 	var elapsedTimeString: String
 	var isRunning: Bool
+	var laps: [Lap]
 	var status: StopwatchStates
 	
-	init(id: UUID = UUID(), startTime: Date? = nil, elapsedTime: TimeInterval = 0, elapsedTimeString: String = "00:00:00", isRunning: Bool = false, status: StopwatchStates = .unstarted) {
+	init(id: UUID = UUID(), label: String = "", startTime: Date? = nil, elapsedTime: TimeInterval = 0, elapsedTimeString: String = "00:00:00", isRunning: Bool = false, laps: [Lap] = [], status: StopwatchStates = .unstarted) {
 		self.id = id
+		self.label = label
 		self.startTime = startTime
 		self.elapsedTime = elapsedTime
 		self.elapsedTimeString = elapsedTimeString
 		self.isRunning = isRunning
+		self.laps = laps
 		self.status = status
 	}
 	
@@ -198,7 +210,6 @@ class Stopwatch {
 	func stop() {
 		if status == .running {
 			// Calculate and store the elapsed time up to the point of pausing
-//
 			self.timeLastPaused = Date() // Mark the time when the stopwatch was paused
 			self.status = .paused
 			self.isRunning = false
@@ -222,9 +233,18 @@ class Stopwatch {
 		self.startTime = nil
 		self.timeLastPaused = nil
 		self.elapsedTime = 0
-		self.elapsedTimeString = "00:00:00.000"
+		self.elapsedTimeString = "00:00:00"
 		self.isRunning = false
 		self.status = .unstarted
+	}
+	
+	func lap() {
+		let prevLap = laps.last ?? Lap(index: 0, timeRunningTotal: 0, timeElapsedSinceLastLap: 0)
+		laps.append(Lap(index: laps.count + 1, timeRunningTotal: elapsedTime, timeElapsedSinceLastLap: calculateTimeInterval(lap: prevLap)))
+	}
+	
+	func sortLapsByElapsedTime() {
+		laps.sort { $0.timeElapsedSinceLastLap < $1.timeElapsedSinceLastLap }
 	}
 	
 	// Format TimeInterval into a string with milliseconds precision
@@ -243,20 +263,24 @@ class Stopwatch {
 			return String(format: "00:%02d:%02d", seconds, milliseconds)
 		}
 	}
+	
+	func calculateTimeInterval(lap: Lap) -> Double {
+		return elapsedTime - lap.timeRunningTotal
+	}
 }
 
 @Model
 class StopwatchSet {
 	@Attribute(.unique) var id: UUID
-	var stopwatches: [Stopwatch]  // A set of stopwatches
+	var stopwatches: [Stopwatch] // A set of stopwatches
 	
-	init(id: UUID = UUID(), stopwatches: [Stopwatch] = [Stopwatch()]) {
+	init(id: UUID = UUID(), stopwatches: [Stopwatch] = [Stopwatch(label: "Stopwatch 1")]) {
 		self.id = id
 		self.stopwatches = stopwatches
 	}
 	
 	func addStopwatch() {
-		let stopwatch = Stopwatch()
+		let stopwatch = Stopwatch(label: "Stopwatch \(self.stopwatches.count + 1)")
 		stopwatches.append(stopwatch)
 	}
 	

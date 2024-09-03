@@ -14,31 +14,49 @@ struct StopwatchItemView: View {
 	let timer = Timer.publish(every: 0.01, on: .main, in: .common).autoconnect()
 
 	var body: some View {
-		HStack {
-			VStack(alignment: .leading) {
-				Text("Stopwatch \(stopwatch.id.uuidString.prefix(4))")
-				Text(stopwatch.elapsedTimeString)
-					.font(.title)
+		ZStack {
+			RoundedRectangle(cornerRadius: 12)
+				.foregroundStyle(Color("ListBGColor"))
+			HStack {
+				VStack(alignment: .leading) {
+					Text(String(stopwatch.label))
+						.foregroundStyle(.gray)
+					Text(stopwatch.elapsedTimeString)
+						.font(.title)
+				}
+				.padding(.leading, 4)
+				Spacer()
+				if stopwatch.status != .running {
+					Button {
+						stopwatch.start()
+					} label: {
+						Image(systemName: "play.fill")
+							.foregroundStyle(.green)
+							.font(.title)
+					}
+					.padding(.horizontal, 8)
+				} else {
+					Button {
+						stopwatch.stop()
+					} label: {
+						Image(systemName: "stop.fill")
+							.foregroundStyle(.red)
+							.font(.title)
+					}
+					.padding(.horizontal, 8)
+				}
+				Button {
+					stopwatch.reset()
+				} label: {
+					Image(systemName: "arrow.trianglehead.counterclockwise")
+						.foregroundStyle(.cyan)
+						.font(.title)
+				}
+				.padding(.horizontal, 8)
 			}
-			.padding(.leading, 4)
-			Spacer()
-			Button {
-				stopwatch.start()
-			} label: {
-				Image(systemName: "play.fill")
-					.foregroundStyle(.green)
-					.font(.largeTitle)
-			}
-			.padding()
-			Button {
-				stopwatch.stop()
-			} label: {
-				Image(systemName: "stop.fill")
-					.foregroundStyle(.red)
-					.font(.largeTitle)
-			}
-			.padding()
+			.padding(8)
 		}
+		.padding(.horizontal, 4)
 		.onReceive(timer) { _ in
 			if stopwatch.isRunning {
 				stopwatch.updateElapsedTime()
@@ -63,5 +81,5 @@ struct StopwatchItemView: View {
 }
 
 #Preview {
-	StopwatchItemView(stopwatch: Stopwatch())
+	StopwatchItemView(stopwatch: Stopwatch(label: "Stopwatch 1"))
 }

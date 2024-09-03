@@ -13,7 +13,6 @@ struct StopwatchApp: App {
 	
 	@StateObject private var settings = Settings(fontChoice: .sansSerif, largerFont: .runningTotal, showSecondaryText: true, showMillisecondsAfterHour: false, expandLapsOnLap: true, resetToOneStopwatch: false, alwaysShowResetButton: false)
 	
-	
 	var body: some Scene {
 		WindowGroup {
 			TabView {
