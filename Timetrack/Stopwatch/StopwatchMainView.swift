@@ -9,7 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct StopwatchMainView: View {
-	@Query var stopwatchSets: [StopwatchSet] = []
+	@Query var stopwatchSets: [StopwatchSet] = [StopwatchSet(stopwatches: [Stopwatch(label: "Stopwatch")])]
+	@EnvironmentObject var settings: Settings
 	@Environment(\.modelContext) private var modelContext
 	
 	var body: some View {
