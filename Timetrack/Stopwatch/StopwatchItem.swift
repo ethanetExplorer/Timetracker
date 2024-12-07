@@ -171,4 +171,22 @@ class StopwatchSet {
 			stopwatches.remove(at: index)
 		}
 	}
+    
+    func startAll() {
+        for stopwatch in stopwatches {
+            stopwatch.start()
+        }
+    }
+    
+    func resetAll() {
+        for stopwatch in stopwatches {
+            stopwatch.reset()
+        }
+    }
+    
+    func stopAll() {
+        for stopwatch in stopwatches {
+            stopwatch.stop()
+        }
+    }
 }

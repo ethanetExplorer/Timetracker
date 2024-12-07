@@ -20,7 +20,6 @@ struct TimersView: View {
 				}
 				.onDelete(perform: deleteTimer)
 			}
-			.navigationTitle("Timers")
 			.toolbar {
 				Button(action: addTimer) {
 					Label("Add Timer", systemImage: "plus")
