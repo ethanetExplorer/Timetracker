@@ -9,124 +9,136 @@ import SwiftUI
 import SwiftData
 
 struct StopwatchMainView: View {
-	@Query var stopwatchSets: [StopwatchSet] = [StopwatchSet(stopwatches: [Stopwatch(label: "Stopwatch")])]
-	@EnvironmentObject var settings: Settings
-	@Environment(\.modelContext) private var modelContext
+    @Query var stopwatchSets: [StopwatchSet] = [StopwatchSet(stopwatches: [Stopwatch(label: "Stopwatch")])]
+    @EnvironmentObject var settings: Settings
+    @Environment(\.modelContext) private var modelContext
     
     @State var showControls = false
-	
-	var body: some View {
-		NavigationStack {
-            HStack {
-                Spacer()
-                Button(role: .destructive) {
-                    if let stopwatchSet = stopwatchSets.first {
-                        withAnimation {
-                            stopwatchSet.stopwatches = [Stopwatch(label: "Stopwatch 1")]
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                ForEach(stopwatchSets.first?.stopwatches ?? [Stopwatch(label: "SStopwatch")]) { stopwatch in
+                    StopwatchItemView(stopwatch: stopwatch)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                stopwatchSets.first?.deleteStopwatch(stopwatch)
+                            } label: {
+                                HStack {
+                                    Text("Delete stopwatch")
+                                    Image(systemName: "trash")
+                                }
+                                .foregroundStyle(.red)
+                            }
                         }
-                    }
-                } label: {
-                    Image(systemName: "trash")
-                        .padding(4)
-                        .symbolEffect(.bounce.down.byLayer , value: true)
-                }
-                Button {
-                    if let stopwatchSet = stopwatchSets.first {
-                        let newStopwatch = Stopwatch(label: "Stopwatch \(stopwatchSet.stopwatches.count + 1)")
-                        stopwatchSet.stopwatches.append(newStopwatch)
-                    } else {
-                        let newStopwatchSet = StopwatchSet(stopwatches: [Stopwatch()])
-                        modelContext.insert(newStopwatchSet)
-                    }
-                } label: {
-                    Image(systemName: "plus")
-                        .padding(4)
                 }
             }
-            .padding()
-			ScrollView {
-				ForEach(stopwatchSets.first?.stopwatches ?? [Stopwatch(label: "SStopwatch")]) { stopwatch in
-					StopwatchItemView(stopwatch: stopwatch)
-						.contextMenu {
-							Button(role: .destructive) {
-								stopwatchSets.first?.deleteStopwatch(stopwatch)
-							} label: {
-								HStack {
-									Text("Delete stopwatch")
-									Image(systemName: "trash")
-								}
-                                .foregroundStyle(.red)
-							}
-						}
-				}
-			}
-            HStack {
-                if showControls {
-                    VStack(alignment: .leading) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading) {
+                    HStack {
                         Text("CONTROLS")
                             .foregroundStyle(.gray)
-                        HStack {
-                            VStack {
-                                Image(systemName: "play")
+                            .padding(.top, 12)
+                    }
+                    if showControls {
+                        Button {
+                            if let stopwatchSet = stopwatchSets.first {
+                                stopwatchSet.startAll()
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "play.fill")
                                 Text("Start all")
-                                    .font(.caption)
                             }
-                            .padding(8)
-                            VStack {
-                                Image(systemName: "play")
+                            .foregroundStyle(.green)
+                            .fontWeight(.medium)
+                            .font(.headline)
+                            .padding(6)
+                        }
+                        Button {
+                            if let stopwatchSet = stopwatchSets.first {
+                                stopwatchSet.stopAll()
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "stop.fill")
                                 Text("Stop all")
-                                    .font(.caption)
                             }
-                            .padding(8)
-                            VStack {
-                                Image(systemName: "play")
+                            .foregroundStyle(.red)
+                            .fontWeight(.medium)
+                            .font(.headline)
+                            .padding(6)
+                        }
+                        Button {
+                            if let stopwatchSet = stopwatchSets.first {
+                                stopwatchSet.resetAll()
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "arrow.counterclockwise")
                                 Text("Reset all")
-                                    .font(.caption)
                             }
-                            .padding(8)
+                            .foregroundStyle(.teal)
+                            .fontWeight(.medium)
+                            .font(.headline)
+                            .padding(6)
+                        }
+                        Button {
+                            if let stopwatchSet = stopwatchSets.first {
+                                withAnimation {
+                                    stopwatchSet.stopwatches = [Stopwatch(label: "Stopwatch 1")]
+                                }
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "xmark")
+                                Text("Clear all")
+                            }
+                            .foregroundStyle(.gray)
+                            .fontWeight(.medium)
+                            .font(.headline)
+                            .padding(6)
+                        }
+                        Button {
+                            if let stopwatchSet = stopwatchSets.first {
+                                let newStopwatch = Stopwatch(label: "Stopwatch \(stopwatchSet.stopwatches.count + 1)")
+                                stopwatchSet.stopwatches.append(newStopwatch)
+                            } else {
+                                let newStopwatchSet = StopwatchSet(stopwatches: [Stopwatch()])
+                                modelContext.insert(newStopwatchSet)
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "plus")
+                                Text("Add stopwatch")
+                            }
+                            .foregroundStyle(.blue)
+                            .fontWeight(.medium)
+                            .font(.headline)
+                            .padding(6)
                         }
                     }
-                        Spacer()
                 }
+                Spacer()
                 Button {
                     withAnimation {
                         showControls.toggle()
                     }
                 } label: {
                     Image(systemName: showControls ? "chevron.down" : "chevron.up")
-                        .font(.title)
+                        .font(.headline)
+                        .fontWeight(.bold)
                 }
-                .padding(8)
+                .padding(12)
             }
-            .padding()
-//			.toolbar {
-//				Button(role: .destructive) {
-//					if let stopwatchSet = stopwatchSets.first {
-//						withAnimation {
-//							stopwatchSet.stopwatches = [Stopwatch(label: "Stopwatch 1")]
-//						}
-//					}
-//				} label: {
-//					Label("Clear all stopwatches", systemImage: "trash")
-//						.symbolEffect(.bounce.down.byLayer , value: true)
-//				}
-//				Button {
-//					if let stopwatchSet = stopwatchSets.first {
-//						let newStopwatch = Stopwatch(label: "Stopwatch \(stopwatchSet.stopwatches.count + 1)")
-//						stopwatchSet.stopwatches.append(newStopwatch)
-//					} else {
-//						let newStopwatchSet = StopwatchSet(stopwatches: [Stopwatch()])
-//						modelContext.insert(newStopwatchSet)
-//					}
-//				} label: {
-//					Label("Add Stopwatch", systemImage: "plus")
-//				}
-//			}
-		}
-	}
+            .cornerRadius(12)
+            .padding(8)
+            .background(.gray.opacity(0.1))
+        }
+    }
 }
 
 
 #Preview {
-	StopwatchMainView()
+    StopwatchMainView()
 }
