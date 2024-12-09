@@ -12,7 +12,7 @@ struct StopwatchMainView: View {
     @Query var stopwatchSets: [StopwatchSet] = [StopwatchSet(stopwatches: [Stopwatch(label: "Stopwatch")])]
     @EnvironmentObject var settings: Settings
     @Environment(\.modelContext) private var modelContext
-    
+    @State var newStopwatchLabel = ""
     @State var showControls = false
     
     var body: some View {
@@ -48,13 +48,15 @@ struct StopwatchMainView: View {
                         } label: {
                             HStack {
                                 Image(systemName: "play.fill")
+                                    .padding(8)
+                                    .background(.green.opacity(0.2))
+                                    .clipShape(Circle())
                                 Text("Start all")
                             }
-                            .foregroundStyle(.green)
-                            .fontWeight(.medium)
-                            .font(.headline)
-                            .padding(6)
                         }
+                        .font(.headline)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.green)
                         Button {
                             if let stopwatchSet = stopwatchSets.first {
                                 stopwatchSet.stopAll()
@@ -62,12 +64,14 @@ struct StopwatchMainView: View {
                         } label: {
                             HStack {
                                 Image(systemName: "stop.fill")
+                                    .padding(8)
+                                    .background(.red.opacity(0.2))
+                                    .clipShape(Circle())
                                 Text("Stop all")
                             }
-                            .foregroundStyle(.red)
-                            .fontWeight(.medium)
                             .font(.headline)
-                            .padding(6)
+                            .fontWeight(.medium)
+                            .foregroundStyle(.red)
                         }
                         Button {
                             if let stopwatchSet = stopwatchSets.first {
@@ -76,12 +80,14 @@ struct StopwatchMainView: View {
                         } label: {
                             HStack {
                                 Image(systemName: "arrow.counterclockwise")
+                                    .padding(8)
+                                    .background(.teal.opacity(0.2))
+                                    .clipShape(Circle())
                                 Text("Reset all")
                             }
-                            .foregroundStyle(.teal)
-                            .fontWeight(.medium)
                             .font(.headline)
-                            .padding(6)
+                            .fontWeight(.medium)
+                            .foregroundStyle(.teal)
                         }
                         Button {
                             if let stopwatchSet = stopwatchSets.first {
@@ -92,30 +98,42 @@ struct StopwatchMainView: View {
                         } label: {
                             HStack {
                                 Image(systemName: "xmark")
+                                    .padding(8)
+                                    .background(.gray.opacity(0.2))
+                                    .clipShape(Circle())
                                 Text("Clear all")
                             }
+                            .font(.headline)
+                            .fontWeight(.medium)
                             .foregroundStyle(.gray)
-                            .fontWeight(.medium)
-                            .font(.headline)
-                            .padding(6)
                         }
-                        Button {
-                            if let stopwatchSet = stopwatchSets.first {
-                                let newStopwatch = Stopwatch(label: "Stopwatch \(stopwatchSet.stopwatches.count + 1)")
-                                stopwatchSet.stopwatches.append(newStopwatch)
-                            } else {
-                                let newStopwatchSet = StopwatchSet(stopwatches: [Stopwatch()])
-                                modelContext.insert(newStopwatchSet)
-                            }
-                        } label: {
-                            HStack {
+                        HStack {
+                            TextField("Stopwatch \(stopwatchSets.first?.stopwatches.count ?? 0)", text: $newStopwatchLabel)
+                                .textFieldStyle(.roundedBorder)
+                            Spacer()
+                            Button {
+                                if let stopwatchSet = stopwatchSets.first {
+                                    if newStopwatchLabel != "" {
+                                        let newStopwatch = Stopwatch(label: newStopwatchLabel)
+                                        stopwatchSet.stopwatches.append(newStopwatch)
+                                        newStopwatchLabel = ""
+                                    } else {
+                                        let newStopwatch = Stopwatch(label: "Stopwatch \(stopwatchSet.stopwatches.count + 1)")
+                                        stopwatchSet.stopwatches.append(newStopwatch)
+                                    }
+                                } else {
+                                    let newStopwatchSet = StopwatchSet(stopwatches: [Stopwatch()])
+                                    modelContext.insert(newStopwatchSet)
+                                }
+                            } label: {
                                 Image(systemName: "plus")
-                                Text("Add stopwatch")
+                                .padding(8)
+                                .foregroundStyle(.blue)
+                                .background(.blue.opacity(0.2))
+                                .clipShape(Circle())
+                                .font(.headline)
+                                .fontWeight(.medium)
                             }
-                            .foregroundStyle(.blue)
-                            .fontWeight(.medium)
-                            .font(.headline)
-                            .padding(6)
                         }
                     }
                 }
