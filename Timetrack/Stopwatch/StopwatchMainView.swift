@@ -72,6 +72,9 @@ struct StopwatchMainView: View {
                             .font(.headline)
                             .fontWeight(.medium)
                             .foregroundStyle(.red)
+                            .fontWeight(.medium)
+                            .font(.headline)
+                            .padding(6)
                         }
                         Button {
                             if let stopwatchSet = stopwatchSets.first {
@@ -88,6 +91,9 @@ struct StopwatchMainView: View {
                             .font(.headline)
                             .fontWeight(.medium)
                             .foregroundStyle(.teal)
+                            .fontWeight(.medium)
+                            .font(.headline)
+                            .padding(6)
                         }
                         Button {
                             if let stopwatchSet = stopwatchSets.first {
@@ -106,6 +112,9 @@ struct StopwatchMainView: View {
                             .font(.headline)
                             .fontWeight(.medium)
                             .foregroundStyle(.gray)
+                            .fontWeight(.medium)
+                            .font(.headline)
+                            .padding(6)
                         }
                         HStack {
                             TextField("Stopwatch \(stopwatchSets.first?.stopwatches.count ?? 0)", text: $newStopwatchLabel)
