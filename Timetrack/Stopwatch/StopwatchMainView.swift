@@ -12,6 +12,7 @@ struct StopwatchMainView: View {
     @Query var stopwatchSets: [StopwatchSet] = [StopwatchSet(stopwatches: [Stopwatch(label: "Stopwatch")])]
     @EnvironmentObject var settings: Settings
     @Environment(\.modelContext) private var modelContext
+    
     @State var newStopwatchLabel = ""
     @State var showControls = false
     
@@ -33,13 +34,23 @@ struct StopwatchMainView: View {
                         }
                 }
             }
-            HStack(alignment: .top) {
                 VStack(alignment: .leading) {
                     HStack {
                         Text("CONTROLS")
                             .foregroundStyle(.gray)
-                            .padding(.top, 12)
+                        Spacer()
+                        Button {
+                            withAnimation {
+                                showControls.toggle()
+                            }
+                        } label: {
+                            Image(systemName: showControls ? "chevron.down" : "chevron.up")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                        }
                     }
+                    .padding(.top, 12)
+                    .padding(.horizontal)
                     if showControls {
                         Button {
                             if let stopwatchSet = stopwatchSets.first {
@@ -57,6 +68,9 @@ struct StopwatchMainView: View {
                         .font(.headline)
                         .fontWeight(.medium)
                         .foregroundStyle(.green)
+                        .padding(.horizontal)
+                        
+                        
                         Button {
                             if let stopwatchSet = stopwatchSets.first {
                                 stopwatchSet.stopAll()
@@ -72,9 +86,7 @@ struct StopwatchMainView: View {
                             .font(.headline)
                             .fontWeight(.medium)
                             .foregroundStyle(.red)
-                            .fontWeight(.medium)
-                            .font(.headline)
-                            .padding(6)
+                            .padding(.horizontal)
                         }
                         Button {
                             if let stopwatchSet = stopwatchSets.first {
@@ -91,9 +103,7 @@ struct StopwatchMainView: View {
                             .font(.headline)
                             .fontWeight(.medium)
                             .foregroundStyle(.teal)
-                            .fontWeight(.medium)
-                            .font(.headline)
-                            .padding(6)
+                            .padding(.horizontal)
                         }
                         Button {
                             if let stopwatchSet = stopwatchSets.first {
@@ -112,12 +122,10 @@ struct StopwatchMainView: View {
                             .font(.headline)
                             .fontWeight(.medium)
                             .foregroundStyle(.gray)
-                            .fontWeight(.medium)
-                            .font(.headline)
-                            .padding(6)
+                            .padding(.horizontal)
                         }
                         HStack {
-                            TextField("Stopwatch \(stopwatchSets.first?.stopwatches.count ?? 0)", text: $newStopwatchLabel)
+                            TextField("Stopwatch \(stopwatchSets.first!.stopwatches.count + 1)", text: $newStopwatchLabel)
                                 .textFieldStyle(.roundedBorder)
                             Spacer()
                             Button {
@@ -137,29 +145,15 @@ struct StopwatchMainView: View {
                             } label: {
                                 Image(systemName: "plus")
                                 .padding(8)
+                                .font(.title3)
                                 .foregroundStyle(.blue)
                                 .background(.blue.opacity(0.2))
                                 .clipShape(Circle())
-                                .font(.headline)
-                                .fontWeight(.medium)
                             }
                         }
+                        .padding(.horizontal)
                     }
                 }
-                Spacer()
-                Button {
-                    withAnimation {
-                        showControls.toggle()
-                    }
-                } label: {
-                    Image(systemName: showControls ? "chevron.down" : "chevron.up")
-                        .font(.headline)
-                        .fontWeight(.bold)
-                }
-                .padding(12)
-            }
-            .cornerRadius(12)
-            .padding(8)
             .background(.gray.opacity(0.1))
         }
     }
