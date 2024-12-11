@@ -36,7 +36,9 @@
 		666599382C57E1CA00E27EF6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				TimerItem.swift,
 				TimerKeyboard.swift,
+				TimersMainView.swift,
 			);
 			target = 662BCFDE2C1A7A2600A9F721 /* Stopwatch */;
 		};

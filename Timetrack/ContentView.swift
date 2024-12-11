@@ -29,8 +29,8 @@ struct ContentView: View {
             switch(selectedTab) {
             case 0: StopwatchMainView()
                     .modelContainer(for: [Stopwatch.self, StopwatchSet.self])
-            case 1: TimersView()
-                    .modelContainer(for: [TimerItem.self, TimerSet.self])
+            case 1: TimersMainView()
+                    .modelContainer(for: TimerItem.self)
             case 2: SettingsView()
             default: SettingsView()
             }
